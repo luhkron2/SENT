@@ -48,3 +48,7 @@ Prerequisites
 
 Next Steps
 - If you want, I can tailor this runbook to your exact stack (Next.js version, auth setup, domain names) and add concrete config templates and a small automation script to bootstrap the dev environment from scratch.
+
+Appendix: Dev Domain Reference
+- Added domain: dev.yourapp.com
+- See DEV_VERCEL_DEV_DOMAIN.md for domain setup details.
