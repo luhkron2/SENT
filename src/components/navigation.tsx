@@ -72,7 +72,7 @@ export function Navigation() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/80 shadow-sm backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/80 animate-slide-down">
+    <header className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/95 shadow-sm backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/95 transition-all duration-300">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link 
           href="/" 
@@ -92,15 +92,15 @@ export function Navigation() {
                 key={item.key}
                 href={item.href}
                 className={cn(
-                  'group flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-bold transition-all duration-300',
+                  'group flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-bold transition-all duration-200 ease-out',
                   isActive
                     ? 'bg-blue-50 text-blue-700 shadow-md shadow-blue-500/10 ring-2 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-200 dark:ring-blue-500/30'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-white',
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-white',
                 )}
               >
                 <Icon
                   className={cn(
-                    'h-5 w-5 transition-all duration-300',
+                    'h-5 w-5 transition-all duration-200 ease-out',
                     isActive 
                       ? 'text-blue-600 dark:text-blue-400' 
                       : 'group-hover:scale-110 group-hover:text-blue-500 dark:group-hover:text-blue-400',
@@ -123,13 +123,13 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-slate-300 hover:bg-white hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+                className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out hover:scale-105 hover:border-slate-300 hover:bg-white hover:shadow-md active:scale-95 dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
                 aria-label="Settings"
               >
                 <Settings className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
               <DropdownMenuLabel>Preferences</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -155,7 +155,7 @@ export function Navigation() {
             variant="ghost"
             size="icon"
             onClick={handleToggleTheme}
-            className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:rotate-12 hover:border-slate-300 hover:bg-white hover:text-slate-900 hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out hover:scale-105 hover:rotate-12 hover:border-slate-300 hover:bg-white hover:text-slate-900 hover:shadow-md active:scale-95 dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
             aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
           >
             <div suppressHydrationWarning>
@@ -182,7 +182,7 @@ export function Navigation() {
                 <Settings className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
               <DropdownMenuLabel>Preferences</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -208,7 +208,7 @@ export function Navigation() {
             variant="ghost"
             size="icon"
             onClick={handleToggleTheme}
-            className="h-10 w-10 rounded-full p-0 text-slate-600 hover:scale-110 hover:rotate-12 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
+            className="h-10 w-10 rounded-full p-0 text-slate-600 transition-all duration-200 ease-out hover:scale-105 hover:rotate-12 hover:bg-slate-100 active:scale-95 dark:text-slate-400 dark:hover:bg-slate-800"
             aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
           >
             <div suppressHydrationWarning>
@@ -225,7 +225,7 @@ export function Navigation() {
             variant="ghost"
             size="sm"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-10 w-10 rounded-full p-0 hover:scale-110 transition-transform"
+            className="h-10 w-10 rounded-full p-0 transition-all duration-200 ease-out hover:scale-105 active:scale-95"
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -235,7 +235,7 @@ export function Navigation() {
       </nav>
 
       {mobileMenuOpen && (
-        <div className="border-t border-slate-200/50 bg-white/95 px-4 py-6 shadow-xl backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/95 md:hidden animate-slide-down">
+        <div className="border-t border-slate-200/50 bg-white/95 px-4 py-6 shadow-xl backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/95 md:hidden animate-in slide-in-from-top-2 duration-200">
           <div className="space-y-2" role="navigation" aria-label="Mobile navigation">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href;
@@ -244,7 +244,7 @@ export function Navigation() {
                   key={item.key}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-4 rounded-lg px-4 py-3 text-lg font-semibold transition-all duration-300',
+                    'flex items-center gap-4 rounded-lg px-4 py-3 text-lg font-semibold transition-all duration-200 ease-out active:scale-98',
                     isActive
                       ? 'bg-blue-50 text-blue-700 shadow-md shadow-blue-500/10 dark:bg-blue-900/30 dark:text-blue-200'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-white',
@@ -262,7 +262,7 @@ export function Navigation() {
           </div>
           <div className="mt-6 flex flex-col gap-3">
             <Link href="/report" onClick={() => setMobileMenuOpen(false)}>
-              <Button className="h-12 w-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-base font-bold text-white shadow-lg hover:shadow-xl hover:shadow-blue-500/30 transition-all">
+              <Button className="h-12 w-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-base font-bold text-white shadow-lg transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/30 active:scale-95">
                 {t.nav.reportCta}
               </Button>
             </Link>

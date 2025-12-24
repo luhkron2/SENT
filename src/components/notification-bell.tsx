@@ -58,18 +58,18 @@ export function NotificationBell() {
         <Button
           variant="ghost"
           size="sm"
-          className="relative h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-slate-300 hover:bg-white hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+          className="relative h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out hover:scale-105 hover:border-slate-300 hover:bg-white hover:shadow-md active:scale-95 dark:border-slate-700/80 dark:bg-slate-800/80 dark:hover:border-slate-600 dark:hover:bg-slate-800"
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5 text-slate-700 transition-colors dark:text-slate-300" />
+          <Bell className="h-5 w-5 text-slate-700 transition-colors duration-200 dark:text-slate-300" />
           {unreadCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-[10px] font-bold text-white shadow-lg ring-2 ring-white animate-pulse dark:ring-slate-900">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-[10px] font-bold text-white shadow-lg ring-2 ring-white animate-in zoom-in-50 spin-in-180 duration-300 dark:ring-slate-900">
               {unreadCount}
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 shadow-xl border-slate-200/70 dark:border-slate-700">
+      <DropdownMenuContent align="end" className="w-80 shadow-xl border-slate-200/70 dark:border-slate-700 animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
         <DropdownMenuLabel className="flex items-center justify-between py-3">
           <span className="text-base font-bold text-slate-900 dark:text-white">Notifications</span>
           {unreadCount > 0 && (
@@ -84,7 +84,7 @@ export function NotificationBell() {
             <DropdownMenuItem
               key={notification.id}
               className={cn(
-                'flex flex-col items-start gap-2 p-4 cursor-pointer',
+                'flex flex-col items-start gap-2 p-4 cursor-pointer transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.99]',
                 !notification.read && 'bg-blue-50/50 dark:bg-blue-950/20'
               )}
             >

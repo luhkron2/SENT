@@ -15,7 +15,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="sm" className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 shadow-sm backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-800/80">
+      <Button variant="ghost" size="sm" className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 shadow-sm backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-800/80 opacity-50">
         <div className="h-5 w-5" />
       </Button>
     );
@@ -26,14 +26,14 @@ export function ThemeToggle() {
       variant="ghost"
       size="sm"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:rotate-12 hover:border-slate-300 hover:bg-white hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+      className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out hover:scale-105 hover:rotate-12 hover:border-slate-300 hover:bg-white hover:shadow-md active:scale-95 dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (
-        <Sun className="h-5 w-5 text-amber-500 transition-transform" />
+        <Sun className="h-5 w-5 text-amber-500 transition-all duration-200 ease-out rotate-0 scale-100" />
       ) : (
-        <Moon className="h-5 w-5 text-slate-700 transition-transform dark:text-slate-300" />
+        <Moon className="h-5 w-5 text-slate-700 transition-all duration-200 ease-out rotate-0 scale-100 dark:text-slate-300" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>
