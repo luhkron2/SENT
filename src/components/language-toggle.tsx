@@ -22,17 +22,17 @@ export function LanguageToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="sm"
       onClick={handleToggle}
       disabled={loading}
-      className="rounded-full border-slate-300 px-3 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-slate-600 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-200"
+      className="h-10 w-10 rounded-full p-0 text-slate-600 transition-all hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 disabled:opacity-50"
       aria-label={label}
       title={label}
       data-active-locale={locale}
     >
       <Languages className="h-4 w-4" />
-      {loading ? '...' : label}
+      <span className="sr-only">{loading ? 'Loading...' : label}</span>
     </Button>
   );
 }

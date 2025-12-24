@@ -140,15 +140,6 @@ export default function AccessPage() {
                   Return Home
                 </Button>
               </Link>
-              <p>
-                Need access? Email{' '}
-                <a
-                  href="mailto:workshop%40senational.com.au"
-                  className="font-semibold text-blue-300 underline underline-offset-4 dark:text-blue-300"
-                >
-                  workshop@senational.com.au
-                </a>
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -221,16 +212,6 @@ export default function AccessPage() {
           })}
         </div>
 
-        <div className="mt-12 rounded-2xl border border-blue-100/60 bg-blue-50/60 p-6 text-center text-sm text-blue-900 dark:border-blue-900/40 dark:bg-blue-900/10 dark:text-blue-100">
-          Need access or forgot your password? Email{' '}
-          <a
-            href="mailto:workshop%40senational.com.au"
-            className="font-semibold underline underline-offset-4"
-          >
-            workshop@senational.com.au
-          </a>{' '}
-          for help.
-        </div>
       </div>
     </div>
   );

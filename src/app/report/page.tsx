@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,18 +14,36 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { UploadZone } from '@/components/upload-zone';
+import { UploadCloud } from 'lucide-react';
 import { FILE_UPLOAD } from '@/lib/constants';
 import { fetchMappings, type MappingsCache } from '@/lib/mappings';
 import { queueIssue, retryQueue, getQueueLength } from '@/lib/offline';
 import { getFallbackMappings } from '@/lib/mapping-fallback';
 import { useFormAutosave } from '@/hooks/useFormAutosave';
 import { toast } from 'sonner';
-import { Loader2, MapPin, Wifi, WifiOff, RefreshCw, UploadCloud, Phone, AlertCircle, Wrench, Thermometer, AlertTriangle, ArrowRight, Truck } from 'lucide-react';
+import { Loader2, MapPin, Wifi, WifiOff, RefreshCw, Phone, AlertCircle, Wrench, Thermometer, AlertTriangle, ArrowRight, Truck } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/components/translation-provider';
-import { QuickActionsMenu } from '@/components/quick-actions-menu';
+const LazyQuickActionsMenu = dynamic(
+  () => import('@/components/quick-actions-menu').then((mod) => mod.QuickActionsMenu),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+
+const LazyUploadZone = dynamic(
+  () => import('@/components/upload-zone').then((mod) => mod.UploadZone),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+        Preparing upload tools…
+      </div>
+    ),
+  }
+);
 
 const reportSchema = z.object({
   driverName: z.string().min(1, 'Driver name is required'),
@@ -55,11 +74,22 @@ export default function ReportPage() {
   const router = useRouter();
   const { t, translate } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [mappings, setMappings] = useState<MappingsCache | null>(null);
+  const [mappings, setMappings] = useState<MappingsCache>(() => getFallbackMappings());
   const [files, setFiles] = useState<File[]>([]);
   const [isOffline, setIsOffline] = useState(false);
   const [queueLength, setQueueLength] = useState(0);
   const uploadHint = `Accepted formats: JPG, PNG, WEBP, GIF, MP4/MOV/AVI up to ${FILE_UPLOAD.maxSizeMB}MB each (${FILE_UPLOAD.maxFiles} files max).`;
+  
+  // Seed local cache immediately so the form is usable even before the first network call completes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const cached = window.localStorage.getItem(MAPPINGS_CACHE_KEY);
+    if (!cached) {
+      const fallback = getFallbackMappings();
+      window.localStorage.setItem(MAPPINGS_CACHE_KEY, JSON.stringify(fallback));
+      setMappings((current) => current ?? fallback);
+    }
+  }, []);
   
   // Get dropdown data from database mappings
   const fleetNumbers = mappings
@@ -207,8 +237,11 @@ export default function ReportPage() {
         return;
       }
 
+      let timeoutId: number | undefined;
       try {
-        const fresh = await fetchMappings();
+        const controller = new AbortController();
+        timeoutId = window.setTimeout(() => controller.abort(), 5000);
+        const fresh = await fetchMappings({ signal: controller.signal });
         const resolved =
           Object.keys(fresh.drivers).length === 0 &&
           Object.keys(fresh.fleets).length === 0 &&
@@ -226,9 +259,17 @@ export default function ReportPage() {
           const fallback = getFallbackMappings();
           setMappings(fallback);
           window.localStorage.setItem(MAPPINGS_CACHE_KEY, JSON.stringify(fallback));
-          toast.info('Using fallback fleet data while we reconnect.');
+          toast.info(
+            error instanceof DOMException && error.name === 'AbortError'
+              ? 'Server is slow. Using fallback fleet data so you can keep working.'
+              : 'Using fallback fleet data while we reconnect.'
+          );
         } else if (!cancelled) {
           toast.info('Showing saved fleet data. Some options may be outdated.');
+        }
+      } finally {
+        if (timeoutId) {
+          window.clearTimeout(timeoutId);
         }
       }
     };
@@ -583,15 +624,28 @@ const onSubmit = async (data: ReportForm) => {
                               <SelectContent>
                                 {fleetNumbers.map((fleet) => {
                                   const rego = mappings?.fleets[fleet]?.rego;
+                                  const brand = mappings?.fleets[fleet]?.brand;
+                                  const model = mappings?.fleets[fleet]?.model;
+                                  const truckInfo = brand && model ? `${brand} ${model}` : '';
                                   return (
                                     <SelectItem key={fleet} value={fleet}>
                                       <div className="flex flex-col items-start">
                                         <span className="text-sm font-semibold">
                                           {rego && rego.trim().length > 0 ? rego : fleet}
                                         </span>
-                                        <span className="text-[0.7rem] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                                          Fleet {fleet}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[0.7rem] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                                            Fleet {fleet}
+                                          </span>
+                                          {truckInfo && (
+                                            <>
+                                              <span className="text-slate-400">•</span>
+                                              <span className="text-[0.7rem] text-blue-600 dark:text-blue-400 font-medium">
+                                                {truckInfo}
+                                              </span>
+                                            </>
+                                          )}
+                                        </div>
                                       </div>
                                     </SelectItem>
                                   );
@@ -818,7 +872,7 @@ const onSubmit = async (data: ReportForm) => {
                     Upload photos or video clips that clarify the issue. Clear media helps operations triage faster.
                   </p>
                   <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-900/60">
-                    <UploadZone onFilesChange={setFiles} />
+                    <LazyUploadZone onFilesChange={setFiles} />
                     <div className="mt-3 flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400">
                       <UploadCloud className="mt-0.5 h-4 w-4 text-blue-500 dark:text-blue-300" />
                       <span>{uploadHint}</span>
@@ -934,7 +988,7 @@ const onSubmit = async (data: ReportForm) => {
               <div className="mt-4 rounded-2xl border border-blue-200/70 bg-white/70 px-4 py-3 text-base font-semibold text-blue-900 dark:border-blue-900/50 dark:bg-slate-950/40 dark:text-blue-100">
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  1300 555 732
+                  0428317321
                 </div>
               </div>
               <p className="mt-4">
@@ -954,9 +1008,8 @@ const onSubmit = async (data: ReportForm) => {
         </div>
       </main>
 
-      <QuickActionsMenu />
+      <LazyQuickActionsMenu />
       <Footer className="mt-16" />
     </div>
   );
 }
-

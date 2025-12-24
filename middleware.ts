@@ -20,10 +20,30 @@ function isRateLimited(ip: string, limit = 50, windowMs = 60000): boolean {
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
+  const accessLevelCookie = req.cookies.get('accessLevel')?.value;
+  const hasAccessCookie = req.cookies.get('accessAuth')?.value === 'true';
   const ip =
     req.headers.get('x-forwarded-for') ||
     req.headers.get('x-real-ip') ||
     'unknown';
+
+  const hasCookieAccessForRoute = (path: string) => {
+    if (!hasAccessCookie) {
+      return false;
+    }
+    if (path.startsWith('/operations')) {
+      return accessLevelCookie === 'operations';
+    }
+    if (path.startsWith('/workshop')) {
+      return accessLevelCookie === 'workshop';
+    }
+    if (path.startsWith('/schedule') || path.startsWith('/issues')) {
+      return accessLevelCookie === 'operations' || accessLevelCookie === 'workshop';
+    }
+    return false;
+  };
+
+  const hasCookieAccess = hasCookieAccessForRoute(pathname);
 
   if (pathname.startsWith('/api/')) {
     if (isRateLimited(ip, 50, 60000)) {
@@ -56,7 +76,7 @@ export default auth((req) => {
 
   const role = req.auth?.user?.role;
 
-  if (isProtectedRoute && !isLoggedIn) {
+  if (isProtectedRoute && !isLoggedIn && !hasCookieAccess) {
     const loginUrl = new URL('/login', req.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
@@ -68,19 +88,19 @@ export default auth((req) => {
   }
 
   if (pathname.startsWith('/operations')) {
-    if (role !== 'OPERATIONS' && role !== 'ADMIN') {
+    if (!hasCookieAccessForRoute(pathname) && role !== 'OPERATIONS' && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/workshop', req.url));
     }
   }
 
   if (pathname.startsWith('/workshop')) {
-    if (role !== 'WORKSHOP' && role !== 'ADMIN') {
+    if (!hasCookieAccessForRoute(pathname) && role !== 'WORKSHOP' && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/operations', req.url));
     }
   }
 
   if (pathname.startsWith('/schedule') || pathname.startsWith('/issues')) {
-    if (role !== 'WORKSHOP' && role !== 'OPERATIONS' && role !== 'ADMIN') {
+    if (!hasCookieAccessForRoute(pathname) && role !== 'WORKSHOP' && role !== 'OPERATIONS' && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', req.url));
     }
   }
@@ -112,4 +132,3 @@ export default auth((req) => {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|.*\\.png$|.*\\.jpg$|.*\\.svg$|favicon.ico).*)'],
 };
-

@@ -1,15 +1,19 @@
 // Service Worker for SE Repairs PWA
-// Version: 2.0.0
-const CACHE_NAME = 'se-repairs-v2';
-const RUNTIME_CACHE = 'se-repairs-runtime-v2';
-const IMAGE_CACHE = 'se-repairs-images-v2';
+// Version: 3.0.0
+const CACHE_NAME = 'se-repairs-static-v3';
+const RUNTIME_CACHE = 'se-repairs-runtime-v3';
+const IMAGE_CACHE = 'se-repairs-images-v3';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
   '/',
   '/report',
+  '/troubleshoot',
+  '/home',
+  '/login',
   '/manifest.json',
   '/favicon.svg',
+  '/logo.svg',
 ];
 
 // Install event - cache static assets

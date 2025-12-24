@@ -55,6 +55,9 @@ function transformMappings(records: MappingRecord[]): MappingsCache {
     if (record.kind === 'fleet') {
       grouped.fleets[record.key] = {
         rego: toStringField(parsed, 'rego', record.key),
+        type: toStringField(parsed, 'type'),
+        brand: toStringField(parsed, 'brand'),
+        model: toStringField(parsed, 'model'),
         status: toStringField(parsed, 'status', 'Active'),
       };
       continue;

@@ -16,6 +16,7 @@ import { NotificationBell } from '@/components/notification-bell';
 import { QuickActionsMenu } from '@/components/quick-actions-menu';
 import { Issue, Status } from '@prisma/client';
 import { TruckBooking } from '@/components/truck-booking';
+import { WorkshopCalendar } from '@/components/workshop-calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -278,7 +279,7 @@ export default function WorkshopPage() {
           <TabsList>
             <TabsTrigger value="kanban">Kanban</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="booking">Book Service</TabsTrigger>
+            <TabsTrigger value="booking">📅 Repair Calendar</TabsTrigger>
           </TabsList>
 
           <TabsContent value="kanban">
@@ -379,7 +380,7 @@ export default function WorkshopPage() {
 
           <TabsContent value="booking">
             <div className="grid gap-6">
-              <TruckBooking />
+              <WorkshopCalendar />
             </div>
           </TabsContent>
         </Tabs>

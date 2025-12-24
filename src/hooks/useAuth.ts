@@ -17,10 +17,16 @@ export function useAuth() {
         return;
       }
 
-      const auth = sessionStorage.getItem('isAuthenticated');
-      const level = sessionStorage.getItem('accessLevel');
+      const getCookie = (name: string) => {
+        const cookies = document.cookie.split(';').map(c => c.trim());
+        const match = cookies.find(c => c.startsWith(`${name}=`));
+        return match ? decodeURIComponent(match.split('=')[1] ?? '') : null;
+      };
+
+      const auth = sessionStorage.getItem('isAuthenticated') ?? getCookie('accessAuth');
+      const level = sessionStorage.getItem('accessLevel') ?? getCookie('accessLevel');
       
-      if (auth === 'true' && level) {
+      if ((auth === 'true' || auth === '1') && level) {
         setIsAuthenticated(true);
         setAccessLevel(level);
       } else {
@@ -36,6 +42,8 @@ export function useAuth() {
   const logout = () => {
     sessionStorage.removeItem('isAuthenticated');
     sessionStorage.removeItem('accessLevel');
+    document.cookie = 'accessAuth=; Max-Age=0; path=/';
+    document.cookie = 'accessLevel=; Max-Age=0; path=/';
     setIsAuthenticated(false);
     setAccessLevel(null);
     router.push('/access');

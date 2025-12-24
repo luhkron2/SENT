@@ -19,6 +19,9 @@ function buildFallbackMappings(): MappingsCache {
   const fleets = FLEET_DATA.reduce<MappingsCache['fleets']>((acc, fleet) => {
     acc[fleet.fleetNumber] = {
       rego: fleet.registration ?? fleet.fleetNumber,
+      type: fleet.type ?? '',
+      brand: fleet.brand ?? '',
+      model: fleet.model ?? '',
       status: fleet.status ?? 'Active',
     };
     return acc;

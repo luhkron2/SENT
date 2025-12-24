@@ -9,6 +9,7 @@ import { PerformanceMonitor } from '@/components/performance-monitor';
 import { GlobalErrorHandler } from '@/components/global-error-handler';
 import { PWAInstaller } from '@/components/pwa-installer';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
+import { PageTransition } from '@/components/page-transition';
 import { cookies } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -88,7 +89,9 @@ export default async function RootLayout({
             <TranslationProvider initialLocale={initialLocale}>
               <ServiceWorkerRegister />
               <PerformanceMonitor enableLogging={process.env.NODE_ENV === 'development'} />
-              {children}
+              <PageTransition>
+                {children}
+              </PageTransition>
               <PWAInstaller />
               <Toaster position="top-center" richColors />
             </TranslationProvider>

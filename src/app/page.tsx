@@ -119,11 +119,11 @@ export default function HomePage() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-purple-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md rounded-3xl border-2 border-slate-700/50 bg-gradient-to-br from-slate-800 to-slate-900 shadow-2xl backdrop-blur-sm">
+        <Card className="w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl">
           <CardHeader className="text-center space-y-4 pb-6">
             <div className="flex justify-center">
-              <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${accessConfig.color} flex items-center justify-center shadow-lg`}>
-                <IconComponent className="w-10 h-10 text-white" />
+              <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${accessConfig.color} flex items-center justify-center shadow-lg`}>
+                <IconComponent className="w-8 h-8 text-white" />
               </div>
             </div>
             <div className="space-y-2">
@@ -150,23 +150,23 @@ export default function HomePage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="pr-10 h-12 text-base bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-400"
+                    className="pr-10 h-12 text-base bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-400 focus-ring focus:border-blue-400 transition-all"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 hover:scale-110 transition-all"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row pt-2">
-                <Button type="button" variant="outline" onClick={handleBack} className="flex-1 h-12 border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700">
+                <Button type="button" variant="outline" onClick={handleBack} className="flex-1 h-12 border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:border-slate-500 transition-all hover-lift">
                   Back
                 </Button>
-                <Button type="submit" disabled={loading} className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white">
+                <Button type="submit" disabled={loading} className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white btn-shimmer transition-all hover:shadow-lg hover:shadow-blue-500/30">
                   {loading ? 'Verifying...' : 'Access Dashboard'}
                 </Button>
               </div>
@@ -174,17 +174,6 @@ export default function HomePage() {
             <div className="rounded-xl border border-amber-700/50 bg-amber-900/20 p-4 text-left">
               <p className="font-semibold text-sm text-amber-200 mb-1">💡 Tip</p>
               <p className="text-xs text-amber-100/90">Passwords rotate regularly. If you need the latest passphrase, contact operations leadership.</p>
-            </div>
-            <div className="text-center text-sm text-slate-300">
-              <p>
-                Need access? Email{' '}
-                <a
-                  href="mailto:workshop%40senational.com.au"
-                  className="font-semibold text-blue-300 underline underline-offset-4 hover:text-blue-200"
-                >
-                  workshop@senational.com.au
-                </a>
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -194,13 +183,24 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-purple-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-6xl animate-fade-in-up">
+        {/* Staff Login Button - Top Right */}
+        <div className="flex justify-end mb-4 animate-slide-right">
+          <Button
+            onClick={() => window.location.href = '/login'}
+            className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all hover-lift hover-glow-effect"
+          >
+            <Shield className="w-4 h-4 mr-2" />
+            Staff Login
+          </Button>
+        </div>
+
         <div className="text-center mb-12 space-y-6">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl">
-              <Wrench className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-center gap-3 mb-6 animate-float">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl hover-glow-effect transition-all">
+              <Wrench className="h-8 w-8 text-white transition-transform hover:rotate-12" />
             </div>
-            <span className="text-4xl font-bold tracking-tight text-white">
+            <span className="text-4xl font-bold tracking-tight text-white text-gradient">
               SE Repairs
             </span>
           </div>
@@ -221,51 +221,52 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {Object.entries(ACCESS_LEVELS).map(([key, config]) => {
+          {Object.entries(ACCESS_LEVELS).map(([key, config], index) => {
             const IconComponent = config.icon;
             return (
               <Card
                 key={key}
-                className="group relative h-full cursor-pointer overflow-hidden rounded-3xl border-2 border-slate-700/50 bg-gradient-to-br from-slate-800 to-slate-900 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-blue-400 hover:shadow-blue-500/20 backdrop-blur-sm"
+                className="group relative h-full cursor-pointer overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
                 onClick={() => handleAccessSelect(key)}
+                style={{ animationDelay: `${index * 150}ms` }}
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-10 blur-2xl transition-opacity group-hover:opacity-20" 
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-20 blur-2xl transition-all duration-500 group-hover:opacity-40" 
                      style={{ background: `linear-gradient(to bottom right, ${config.color.split(' ')[1]}, ${config.color.split(' ')[3]})` }} />
-                <CardHeader className="space-y-4 text-center relative z-10">
-                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg transition-transform group-hover:scale-110 group-hover:shadow-xl"
+                <CardHeader className="space-y-4 text-center relative z-10 pb-4">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl"
                        style={{ background: `linear-gradient(to bottom right, ${config.color.split(' ')[1]}, ${config.color.split(' ')[3]})` }}>
-                    <IconComponent className="h-10 w-10 text-white" />
+                    <IconComponent className="h-8 w-8 text-white transition-transform duration-300 group-hover:scale-110" />
                   </div>
                   <div className="space-y-2">
-                    <CardTitle className="text-2xl font-bold text-white">
+                    <CardTitle className="text-xl font-bold text-white">
                       {config.name}
                     </CardTitle>
-                    <CardDescription className="text-base text-blue-200">
+                    <CardDescription className="text-sm text-blue-100">
                       {config.description}
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent className="relative z-10 space-y-6 px-6 pb-6">
-                  <ul className="space-y-3 text-sm">
+                <CardContent className="relative z-10 space-y-4 px-6 pb-6">
+                  <ul className="space-y-2 text-sm">
                     {config.highlights.map((highlight, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-200">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-400" />
-                        <span>{highlight}</span>
+                      <li key={i} className="flex items-start gap-2 text-slate-200">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400" />
+                        <span className="text-slate-100">{highlight}</span>
                       </li>
                     ))}
                   </ul>
                   <Button 
-                    className="w-full justify-center gap-2 text-base h-12 bg-gradient-to-r shadow-md transition-all group-hover:shadow-lg"
+                    className="w-full justify-center gap-2 text-base h-11 shadow-lg transition-all hover:shadow-xl hover:scale-105"
                     style={{ background: `linear-gradient(to right, ${config.color.split(' ')[1]}, ${config.color.split(' ')[3]})` }}
                   >
                     {config.requiresPassword ? (
                       <>
-                        <Shield className="h-5 w-5" />
+                        <Shield className="h-4 w-4" />
                         Access {config.name}
                       </>
                     ) : (
                       <>
-                        <ArrowRight className="h-5 w-5" />
+                        <ArrowRight className="h-4 w-4" />
                         Enter {config.name}
                       </>
                     )}
@@ -276,20 +277,6 @@ export default function HomePage() {
           })}
         </div>
 
-        <Card className="rounded-3xl border-2 border-blue-800/50 bg-gradient-to-r from-blue-900/80 to-purple-900/80 backdrop-blur-sm shadow-2xl">
-          <CardContent className="p-6 text-center">
-            <p className="text-sm text-blue-100">
-              Need access or forgot your password? Email{' '}
-              <a
-                href="mailto:workshop%40senational.com.au"
-                className="font-semibold text-blue-300 underline underline-offset-4 hover:text-blue-200 transition-colors"
-              >
-                workshop@senational.com.au
-              </a>{' '}
-              for help.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

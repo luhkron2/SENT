@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const result = await signIn('credentials', {
-        email: formData.email,
+        email: formData.email || undefined,
         password: formData.password,
         redirect: false,
       });
@@ -53,13 +53,13 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email (Optional)</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
+                placeholder="Leave empty for master access"
               />
             </div>
 
@@ -86,7 +86,10 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 p-4 bg-muted rounded-lg text-xs">
-            <p className="font-semibold mb-2">Test Accounts:</p>
+            <p className="font-semibold mb-2 text-green-600">🔑 Master Access:</p>
+            <p className="mb-3 font-bold">Password: KRON@04 (no email needed)</p>
+            
+            <p className="font-semibold mb-2 mt-4">Test Accounts:</p>
             <p>workshop@example.com / password123</p>
             <p>ops@example.com / password123</p>
             <p>admin@example.com / password123</p>
@@ -96,4 +99,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

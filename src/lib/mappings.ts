@@ -5,6 +5,9 @@ export interface DriverMapping {
 
 export interface FleetMapping {
   rego: string;
+  type?: string;
+  brand?: string;
+  model?: string;
   status?: string;
 }
 
@@ -42,8 +45,14 @@ export function getTrailerInfo(
   return mappings.trailers[trailerKey];
 }
 
-export async function fetchMappings(): Promise<MappingsCache> {
-  const response = await fetch('/api/mappings');
+type FetchMappingsOptions = {
+  signal?: AbortSignal;
+};
+
+export async function fetchMappings(options?: FetchMappingsOptions): Promise<MappingsCache> {
+  const response = await fetch('/api/mappings', {
+    signal: options?.signal,
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch mappings');
   }
@@ -57,4 +66,3 @@ export function parseMappingValue<T>(value: string): T {
     return {} as T;
   }
 }
-

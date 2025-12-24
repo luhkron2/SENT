@@ -5,7 +5,13 @@ import { toast } from 'sonner';
 
 export function ServiceWorkerRegister() {
   useEffect(() => {
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    // Don't register service workers during development to avoid stale caches
+    if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => registration.unregister());
+        });
+      }
       return;
     }
 

@@ -58,21 +58,22 @@ export function NotificationBell() {
         <Button
           variant="ghost"
           size="sm"
-          className="relative h-10 w-10 rounded-full p-0"
+          className="relative h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-slate-300 hover:bg-white hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+          aria-label="Notifications"
         >
-          <Bell className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+          <Bell className="h-5 w-5 text-slate-700 transition-colors dark:text-slate-300" />
           {unreadCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-[10px] font-bold text-white shadow-lg ring-2 ring-white animate-pulse dark:ring-slate-900">
               {unreadCount}
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span className="font-bold">Notifications</span>
+      <DropdownMenuContent align="end" className="w-80 shadow-xl border-slate-200/70 dark:border-slate-700">
+        <DropdownMenuLabel className="flex items-center justify-between py-3">
+          <span className="text-base font-bold text-slate-900 dark:text-white">Notifications</span>
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="text-xs">
+            <Badge variant="destructive" className="text-xs shadow-sm">
               {unreadCount} new
             </Badge>
           )}
@@ -120,7 +121,7 @@ export function NotificationBell() {
           ))}
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="justify-center font-semibold text-blue-600 dark:text-blue-400">
+        <DropdownMenuItem className="justify-center py-3 font-semibold text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
           View all notifications
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,0 +1,284 @@
+================================================================================
+WORKSHOP REPAIR CALENDAR - USER GUIDE
+================================================================================
+
+📅 Large Interactive Calendar for Booking Repairs
+🔧 Visual Schedule Management
+✅ Easy Booking & Tracking
+
+================================================================================
+HOW TO ACCESS THE CALENDAR
+================================================================================
+
+1. Login to Workshop:
+   - Go to https://serepairs.com.au/workshop
+   - OR use password: KRON@04
+
+2. Navigate to Calendar:
+   - Click the "📅 Repair Calendar" tab
+   - Full calendar view will display
+
+================================================================================
+CALENDAR FEATURES
+================================================================================
+
+🗓️ MONTHLY VIEW
+- Large, easy-to-read calendar grid
+- Shows entire month at a glance
+- Today's date is highlighted in blue
+- Navigate months with arrow buttons
+
+📅 BOOKING DISPLAY
+- Each repair booking appears as a colored block on the calendar
+- Color coding by priority:
+  🔴 RED = Urgent
+  🟠 ORANGE = High
+  🟡 YELLOW = Medium
+  🟢 GREEN = Low
+
+📊 DAILY CAPACITY
+- See up to 3 bookings per day on calendar
+- "+X more" indicator if more than 3 bookings
+- Click any date to view all bookings
+
+================================================================================
+HOW TO BOOK A REPAIR
+================================================================================
+
+STEP 1: Select Date
+- Click on any day in the calendar
+- Booking dialog opens automatically
+
+STEP 2: Fill in Details
+Required fields:
+- ✅ Truck Number (e.g., 01A, 02B)
+- ✅ Time (select from time picker)
+- ✅ Driver Name
+- ✅ Driver Phone
+- ✅ Service Type (dropdown menu)
+- ✅ Priority Level (Low/Medium/High/Urgent)
+- ✅ Service Description
+
+STEP 3: Confirm Booking
+- Click "Book Repair" button
+- Confirmation appears
+- Booking immediately appears on calendar
+
+================================================================================
+SERVICE TYPES AVAILABLE
+================================================================================
+
+🔧 Routine Maintenance
+🛠️ Repair Service
+🔍 Safety Inspection
+🚨 Emergency Service
+🛞 Tire Service
+🛑 Brake Service
+⚙️ Engine Work
+⚡ Electrical
+
+================================================================================
+TODAY'S SCHEDULE PANEL
+================================================================================
+
+Below the calendar, you'll see "Today's Schedule" showing:
+- Number of repairs booked for today
+- Detailed list of each booking:
+  • Truck number and time
+  • Driver name and phone
+  • Service type and description
+  • Priority level (color-coded)
+
+================================================================================
+CALENDAR NAVIGATION
+================================================================================
+
+⬅️ PREVIOUS MONTH
+- Click left arrow to go back
+
+➡️ NEXT MONTH
+- Click right arrow to go forward
+
+📆 TODAY BUTTON
+- Instantly jump back to current month
+
+🗓️ CURRENT MONTH/YEAR
+- Displayed at top center
+- Shows which month you're viewing
+
+================================================================================
+INTERACTIVE FEATURES
+================================================================================
+
+✨ HOVER EFFECTS
+- Hover over dates to see highlight
+- Hover over bookings to see full details
+
+🖱️ CLICK TO BOOK
+- Click any future date to book
+- Click dates with existing bookings to add more
+
+📱 RESPONSIVE DESIGN
+- Works on desktop, tablet, and mobile
+- Adapts to screen size
+
+🎨 DARK/LIGHT MODE
+- Supports theme switching
+- Calendar adjusts colors automatically
+
+================================================================================
+PRIORITY LEVELS EXPLAINED
+================================================================================
+
+🟢 LOW (Green)
+- Routine maintenance
+- Can be scheduled flexibly
+- No immediate urgency
+
+🟡 MEDIUM (Yellow)
+- Standard repairs
+- Schedule within week
+- Moderate importance
+
+🟠 HIGH (Orange)
+- Important repairs
+- Should be done ASAP
+- May affect operations
+
+🔴 URGENT (Red)
+- Critical repairs
+- Immediate attention needed
+- Safety concerns
+- Fleet availability at risk
+
+================================================================================
+BEST PRACTICES
+================================================================================
+
+✅ DO:
+- Book repairs in advance when possible
+- Include detailed descriptions
+- Set appropriate priority levels
+- Double-check driver information
+- Review Today's Schedule daily
+
+❌ DON'T:
+- Overbook single dates
+- Use urgent priority for non-critical items
+- Forget to include contact information
+- Skip service type selection
+
+================================================================================
+EXAMPLE BOOKING WORKFLOW
+================================================================================
+
+SCENARIO: Truck 05C needs brake service tomorrow at 10 AM
+
+1. Click tomorrow's date on calendar
+2. Fill in booking form:
+   - Truck Number: 05C
+   - Time: 10:00
+   - Driver Name: John Smith
+   - Driver Phone: 0412 345 678
+   - Service Type: Brake Service
+   - Priority: HIGH
+   - Description: "Brake pads worn, squeaking noise reported"
+3. Click "Book Repair"
+4. ✅ Orange block appears on tomorrow's date
+5. ✅ Booking shows in Today's Schedule (tomorrow)
+
+================================================================================
+CALENDAR CAPACITY
+================================================================================
+
+📊 Recommended Daily Limits:
+- 5-8 repairs per day (standard)
+- 3-4 for major repairs
+- 10+ possible for quick services
+
+⚠️ Visual Indicators:
+- Up to 3 bookings shown per day on calendar
+- "+X more" if exceeding 3
+- Click date to see all bookings
+
+================================================================================
+MOBILE ACCESS
+================================================================================
+
+📱 On Mobile Devices:
+- Calendar scales to fit screen
+- Swipe to navigate months
+- Tap dates to book
+- Form optimized for touch input
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+❓ Calendar not showing bookings?
+- Refresh the page
+- Check you're on correct month
+- Verify bookings were saved
+
+❓ Can't click on dates?
+- Ensure you're logged in as Workshop staff
+- Try refreshing the browser
+
+❓ Booking not appearing after submission?
+- Check for confirmation toast message
+- Navigate to correct date
+- Refresh calendar if needed
+
+================================================================================
+KEYBOARD SHORTCUTS
+================================================================================
+
+⬅️ Arrow Left: Previous month
+➡️ Arrow Right: Next month
+T: Jump to Today
+ESC: Close booking dialog
+
+================================================================================
+CALENDAR MAINTENANCE
+================================================================================
+
+🔄 AUTO-REFRESH
+- Calendar updates in real-time
+- No manual refresh needed
+- Bookings sync across users
+
+💾 DATA PERSISTENCE
+- All bookings are saved
+- Survives page refresh
+- Accessible from any device
+
+================================================================================
+SUPPORT
+================================================================================
+
+📧 Questions or Issues:
+Email: workshop@senational.com.au
+
+🌐 Online Access:
+https://serepairs.com.au/workshop
+
+🔑 Login Help:
+Use master password: KRON@04
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+🎯 TO BOOK A REPAIR:
+Click Date → Fill Form → Submit
+
+🎯 TO VIEW TODAY'S SCHEDULE:
+Look below calendar for "Today's Schedule"
+
+🎯 TO NAVIGATE MONTHS:
+Use arrow buttons or "Today" button
+
+🎯 TO CHECK CAPACITY:
+Look at number of colored blocks per day
+
+================================================================================
