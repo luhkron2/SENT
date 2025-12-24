@@ -3,7 +3,6 @@ import { BarChart3, Calendar, ClipboardCheck, Clock, PhoneCall, Truck, Wrench, Z
 import type { ComponentType } from 'react';
 
 import { DashboardClient } from '@/components/dashboard-client';
-import { FloatingActionWrapper } from '@/components/floating-action-wrapper';
 import { Navigation } from '@/components/navigation';
 import Link from 'next/link';
 
@@ -162,7 +161,6 @@ export default function DashboardHomePage() {
           </div>
         </section>
       </main>
-      <FloatingActionWrapper />
     </div>
   );
 }
