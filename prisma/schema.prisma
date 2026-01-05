@@ -31,6 +31,21 @@ enum Severity {
   CRITICAL
 }
 
+enum EquipmentRequestStatus {
+  PENDING
+  APPROVED
+  ORDERED
+  RECEIVED
+  CANCELLED
+}
+
+enum EquipmentPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String?
@@ -42,8 +57,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  workOrders WorkOrder[]
-  comments   Comment[]
+  workOrders         WorkOrder[]
+  comments           Comment[]
+  equipmentRequests  EquipmentRequest[]
 }
 
 model Issue {
@@ -66,9 +82,10 @@ model Issue {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   
-  comments   Comment[]
-  media      Media[]
-  workOrders WorkOrder[]
+  comments          Comment[]
+  media             Media[]
+  workOrders        WorkOrder[]
+  equipmentRequests EquipmentRequest[]
 }
 
 model WorkOrder {
@@ -114,4 +131,37 @@ model Mapping {
   updatedAt DateTime @updatedAt
   
   @@unique([kind, key], name: "kind_key")
+}
+
+model EquipmentRequest {
+  id              String                  @id @default(cuid())
+  issueId         String?
+  issue           Issue?                  @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  requestedById   String
+  requestedBy     User                    @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+  status          EquipmentRequestStatus  @default(PENDING)
+  priority        EquipmentPriority       @default(MEDIUM)
+  itemName        String
+  itemDescription String?
+  quantity        Int                     @default(1)
+  estimatedCost   Float?
+  supplier        String?
+  partNumber      String?
+  reason          String                  // Why this equipment is needed
+  fleetNumber     String?                 // Related fleet if applicable
+  urgentReason    String?                 // Explanation if URGENT
+  approvedBy      String?
+  approvedAt      DateTime?
+  orderedAt       DateTime?
+  receivedAt      DateTime?
+  cancelledAt     DateTime?
+  cancellationReason String?
+  notes           String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  
+  @@index([status])
+  @@index([priority])
+  @@index([requestedById])
+  @@index([issueId])
 }

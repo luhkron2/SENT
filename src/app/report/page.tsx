@@ -25,6 +25,7 @@ import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/components/translation-provider';
 import { QuickActionsMenu } from '@/components/quick-actions-menu';
+import { QuickReportTemplates, type QuickTemplate } from '@/components/quick-report-templates';
 
 const reportSchema = z.object({
   driverName: z.string().min(1, 'Driver name is required'),
@@ -315,36 +316,47 @@ const useGPS = () => {
   }
 };
 
-const manualAutoFill = () => {
-  if (!mappings) {
-    toast.error('Data not loaded yet');
-    return;
-  }
-
-  let filledCount = 0;
-
-  if (driverName && mappings.drivers[driverName]) {
-    const driverData = mappings.drivers[driverName];
-    if (driverData.phone) {
-      setValue('driverPhone', driverData.phone);
-      filledCount++;
+  const manualAutoFill = () => {
+    if (!mappings) {
+      toast.error('Data not loaded yet');
+      return;
     }
-  }
 
-  if (fleetNumber && mappings.fleets[fleetNumber]) {
-    const fleetData = mappings.fleets[fleetNumber];
-    if (fleetData.rego) {
-      setValue('primeRego', fleetData.rego);
-      filledCount++;
+    let filledCount = 0;
+
+    if (driverName && mappings.drivers[driverName]) {
+      const driverData = mappings.drivers[driverName];
+      if (driverData.phone) {
+        setValue('driverPhone', driverData.phone);
+        filledCount++;
+      }
     }
-  }
 
-  if (filledCount > 0) {
-    toast.success(`Auto-filled ${filledCount} field${filledCount > 1 ? 's' : ''}`);
-  } else {
-    toast.info('No data available to auto-fill. Please select a fleet number or driver first.');
-  }
-};
+    if (fleetNumber && mappings.fleets[fleetNumber]) {
+      const fleetData = mappings.fleets[fleetNumber];
+      if (fleetData.rego) {
+        setValue('primeRego', fleetData.rego);
+        filledCount++;
+      }
+    }
+
+    if (filledCount > 0) {
+      toast.success(`Auto-filled ${filledCount} field${filledCount > 1 ? 's' : ''}`);
+    } else {
+      toast.info('No data available to auto-fill. Please select a fleet number or driver first.');
+    }
+  };
+
+  const handleTemplateSelect = (template: QuickTemplate) => {
+    setValue('category', template.category);
+    setValue('severity', template.severity);
+    setValue('description', template.description);
+    setValue('safeToContinue', template.safeToContinue);
+    
+    // Smooth scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
 
 
 const onSubmit = async (data: ReportForm) => {
@@ -865,6 +877,8 @@ const onSubmit = async (data: ReportForm) => {
           </Card>
 
           <aside className="space-y-6">
+            <QuickReportTemplates onSelectTemplate={handleTemplateSelect} />
+            
             <div className="rounded-3xl border border-slate-200/70 bg-white/95 p-6 shadow-lg dark:border-slate-800 dark:bg-slate-900/80">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Common issues</h3>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
