@@ -237,7 +237,7 @@ export function Navigation() {
       {mobileMenuOpen && (
         <div className="border-t border-slate-200/50 bg-white/95 px-4 py-6 shadow-xl backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/95 md:hidden animate-in slide-in-from-top-2 duration-200">
           <div className="space-y-2" role="navigation" aria-label="Mobile navigation">
-            {navItems.map((item, index) => {
+            {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link

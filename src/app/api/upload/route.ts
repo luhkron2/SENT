@@ -3,6 +3,11 @@ import { uploadFiles, getStorageStatus } from '@/lib/storage';
 import { logger } from '@/lib/logger';
 import { FILE_UPLOAD } from '@/lib/constants';
 import { validateFile } from '@/lib/form-validation';
+import { z } from 'zod';
+
+const uploadSchema = z.object({
+  files: z.array(z.any()).min(1, 'At least one file is required'),
+});
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -17,8 +22,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
 
-    if (!files || files.length === 0) {
-      return NextResponse.json({ error: 'No files provided' }, { status: 400 });
+    const validation = uploadSchema.safeParse({ files });
+    if (!validation.success) {
+      const errorMsg = validation.error.issues[0]?.message || validation.error.message || 'Validation failed';
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
 
     if (files.length > FILE_UPLOAD.maxFiles) {

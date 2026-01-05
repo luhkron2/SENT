@@ -45,6 +45,41 @@ export default function SchedulePage() {
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
+      // Fallback demo event for environments without a DB
+      const now = new Date();
+      const later = new Date(now.getTime() + 60 * 60 * 1000);
+      const demo: any = {
+        id: 'demo',
+        title: 'Demo: No real data',
+        start: now.toISOString(),
+        end: later.toISOString(),
+        extendedProps: {
+          workOrder: {
+            id: 'demo',
+            issue: {
+              id: 'demo',
+              ticket: 0,
+              fleetNumber: 'DEMO',
+              severity: 'LOW',
+              category: 'Demo',
+              description: 'Demo event',
+              createdAt: now.toISOString(),
+              updatedAt: now.toISOString(),
+            },
+          },
+          issue: {
+            id: 'demo',
+            ticket: 0,
+            fleetNumber: 'DEMO',
+            severity: 'LOW' as any,
+            category: 'Demo',
+            description: 'Demo event',
+            createdAt: now.toISOString(),
+            updatedAt: now.toISOString(),
+          },
+        },
+      };
+      setEvents([demo]);
     }
   }, []);
 
@@ -126,8 +161,8 @@ export default function SchedulePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
+     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -137,14 +172,14 @@ export default function SchedulePage() {
                   Back to Workshop
                 </Button>
               </Link>
-              <h1 className="text-xl font-bold">Work Order Schedule</h1>
-            </div>
-          </div>
+       <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Work Order Schedule</h1>
+             </div>
+           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-card rounded-2xl p-6 border">
+       <div className="container mx-auto px-4 py-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="timeGridWeek"
@@ -154,7 +189,7 @@ export default function SchedulePage() {
               right: 'dayGridMonth,timeGridWeek,timeGridDay',
             }}
             timeZone="Australia/Melbourne"
-            editable={true}
+             editable={true}
             droppable={true}
             events={events}
             eventClick={handleEventClick}
@@ -163,6 +198,23 @@ export default function SchedulePage() {
             height="auto"
             slotMinTime="06:00:00"
             slotMaxTime="20:00:00"
+            slotLabelFormat={{
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            }}
+            eventContent={(eventInfo) => (
+              <div className="p-1 text-xs overflow-hidden">
+                <div className="font-semibold truncate">{eventInfo.event.title}</div>
+                <div className="text-[10px] opacity-80">
+                  {eventInfo.event.start?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                  {eventInfo.event.end?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            )}
+            dayHeaderFormat={{ weekday: 'short', day: 'numeric' }}
+            allDaySlot={false}
+            slotEventOverlap={false}
           />
         </div>
       </div>

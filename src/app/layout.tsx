@@ -7,7 +7,7 @@ import { TranslationProvider } from '@/components/translation-provider';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { PerformanceMonitor } from '@/components/performance-monitor';
 import { GlobalErrorHandler } from '@/components/global-error-handler';
-import { PWAInstaller } from '@/components/pwa-installer';
+// import { PWAInstaller } from '@/components/pwa-installer';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
 import { PageTransition } from '@/components/page-transition';
 import { cookies } from 'next/headers';
@@ -92,7 +92,7 @@ export default async function RootLayout({
               <PageTransition>
                 {children}
               </PageTransition>
-              <PWAInstaller />
+              {/* <PWAInstaller /> */}
               <Toaster position="top-center" richColors />
             </TranslationProvider>
           </ThemeProvider>
