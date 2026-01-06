@@ -4,6 +4,6 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run vercel-build",
   "env": {
-    "NEXTAUTH_URL": "https://www.serepairs.com.au"
+    "NEXTAUTH_URL": "https://serepairs.com.au"
   }
 }
