@@ -22,9 +22,9 @@ import { useFormAutosave } from '@/hooks/useFormAutosave';
 import { toast } from 'sonner';
 import { Loader2, MapPin, Wifi, WifiOff, RefreshCw, UploadCloud, Phone, AlertCircle, Wrench, Thermometer, AlertTriangle, ArrowRight, Truck } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
-import { Footer } from '@/components/footer';
+
 import { useTranslation } from '@/components/translation-provider';
-import { QuickActionsMenu } from '@/components/quick-actions-menu';
+
 import { DriverLiveFeed } from '@/components/driver-live-feed';
 
 const reportSchema = z.object({
@@ -958,8 +958,7 @@ const onSubmit = async (data: ReportForm) => {
         </div>
       </main>
 
-      <QuickActionsMenu />
-      <Footer className="mt-16" />
+
     </div>
   );
 }

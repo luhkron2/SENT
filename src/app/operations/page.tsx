@@ -16,11 +16,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NotificationBell } from '@/components/notification-bell';
-import { QuickActionsMenu } from '@/components/quick-actions-menu';
+
 import { toast } from 'sonner';
 import { Issue } from '@prisma/client';
 import { TruckBooking } from '@/components/truck-booking';
-import { Footer } from '@/components/footer';
+
 
 export default function OperationsPage() {
   const { isAuthenticated, accessLevel, loading, logout } = useAuth();
@@ -417,8 +417,7 @@ export default function OperationsPage() {
         </Card>
       </main>
 
-      <QuickActionsMenu />
-      <Footer className="mt-16" />
+
     </div>
   );
 }

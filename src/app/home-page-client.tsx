@@ -10,7 +10,7 @@ import { Issue } from "@prisma/client";
 import { Truck, ArrowRight, ShieldCheck, ClipboardCheck } from "lucide-react";
 import { useTranslation } from "@/components/translation-provider";
 import { Navigation } from "@/components/navigation";
-import { Footer } from "@/components/footer";
+
 
 type IssueWithComments = Issue & {
   comments: Array<{
@@ -194,7 +194,7 @@ export function HomePageClient({ issues }: HomePageClientProps) {
         </div>
       </main>
 
-      <Footer className="mt-16" />
+
     </div>
   );
 }

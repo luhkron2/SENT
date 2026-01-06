@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NotificationBell } from '@/components/notification-bell';
-import { QuickActionsMenu } from '@/components/quick-actions-menu';
+
 import { Issue, Status } from '@prisma/client';
 import { TruckBooking } from '@/components/truck-booking';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -463,7 +463,7 @@ export default function WorkshopPage() {
         </DialogContent>
       </Dialog>
 
-      <QuickActionsMenu />
+
     </div>
   );
 }

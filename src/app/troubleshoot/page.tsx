@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Navigation } from '@/components/navigation';
-import { Footer } from '@/components/footer';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -394,7 +394,7 @@ export default function TroubleshootPage() {
         </div>
       </main>
 
-      <Footer className="mt-16" />
+
     </div>
   );
 }

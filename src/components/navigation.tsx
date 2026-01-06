@@ -5,23 +5,11 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ComponentType, SVGProps, useEffect, useState } from 'react';
-
+import { Home, FileText, Wrench, Settings, Activity, Phone, Moon, Sun, Menu, X } from 'lucide-react';
+import { Logo } from '@/components/ui/logo';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
-import {
-  Activity,
-  FileText,
-  Home,
-  Menu,
-  Moon,
-  Phone,
-  Settings,
-  Sun,
-  Wrench,
-  X,
-} from 'lucide-react';
 
 type NavItem = {
   key: 'home' | 'report' | 'workshop' | 'operations' | 'troubleshoot';
@@ -76,7 +64,7 @@ export function Navigation() {
                   'group flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-bold transition-all duration-300',
                   isActive
                     ? 'bg-blue-600/10 text-blue-700 shadow-inner ring-1 ring-blue-600/20 dark:bg-blue-500/20 dark:text-blue-200 dark:ring-blue-500/30'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-white',
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-slate-900',
                 )}
               >
                 <Icon
@@ -96,7 +84,7 @@ export function Navigation() {
             <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             {t.nav.hotlinePhone}
           </span>
-          {isDriverRoute && <LanguageToggle />}
+          <LanguageToggle />
           <Button
             variant="ghost"
             size="icon"
@@ -105,23 +93,23 @@ export function Navigation() {
             aria-label="Toggle theme"
           >
             <div suppressHydrationWarning>
-              {!mounted ? (
-                <Moon className="h-5 w-5" />
-              ) : resolvedTheme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
+               {!mounted ? (
+                 <Moon className="h-5 w-5" />
+               ) : resolvedTheme === 'dark' ? (
+                 <Sun className="h-5 w-5" />
+               ) : (
+                 <Moon className="h-5 w-5" />
+               )}
             </div>
           </Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          {isDriverRoute && <LanguageToggle />}
+          <LanguageToggle />
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleToggleTheme}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="h-10 w-10 rounded-full p-0"
             aria-label="Toggle theme"
           >

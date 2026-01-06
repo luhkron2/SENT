@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
 import { Navigation } from '@/components/navigation';
-import { Footer } from '@/components/footer';
+
 import { Truck, ArrowRight, Shield, CheckCircle, Users, Wrench, Brain, Zap, Target, BarChart3, Smartphone, Wifi, Database } from 'lucide-react';
 
 export default function FeaturesPage() {
@@ -280,7 +280,7 @@ export default function FeaturesPage() {
           </div>
         </div>
       </div>
-      <Footer className="mt-16" />
+
     </div>
   );
 }
