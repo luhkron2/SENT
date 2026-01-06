@@ -7,7 +7,7 @@ export const en = {
     troubleshoot: 'Troubleshoot',
     reportCta: 'Report an issue',
     hotlineBadge: 'Workshop coverage: 24/7 on-call response',
-    hotlinePhone: '1300 555 732',
+    hotlinePhone: '0428317321',
   },
   language: {
     english: 'English',

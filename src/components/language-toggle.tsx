@@ -26,7 +26,7 @@ export function LanguageToggle() {
       size="sm"
       onClick={handleToggle}
       disabled={loading}
-      className="rounded-full border-slate-300 px-3 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-slate-600 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-200"
+      className="rounded-full border-slate-300 px-2 py-1 text-[0.6rem] font-medium text-slate-600 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:hover:border-slate-700 dark:hover:text-slate-200"
       aria-label={label}
       title={label}
       data-active-locale={locale}

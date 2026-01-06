@@ -7,7 +7,7 @@ export const pa = {
     troubleshoot: 'ਟ੍ਰਬਲਸ਼ੂਟ',
     reportCta: 'ਮੁੱਦਾ ਰਿਪੋਰਟ ਕਰੋ',
     hotlineBadge: 'ਵਰਕਸ਼ਾਪ ਕਵਰੇਜ: 24/7 ਆਨ-ਕਾਲ ਸਹਾਇਤਾ',
-    hotlinePhone: '1300 555 732',
+    hotlinePhone: '0428317321',
   },
   language: {
     english: 'ਅੰਗਰੇਜ਼ੀ',
