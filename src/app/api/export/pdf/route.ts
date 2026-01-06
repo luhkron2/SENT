@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/../auth';
 import { generatePDF } from '@/lib/export';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error exporting PDF:', error);
+    logger.error('Error exporting PDF', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to export PDF' },
       { status: 500 }

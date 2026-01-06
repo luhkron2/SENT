@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/../auth";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 const updateSchema = z.object({
   message: z.string().min(1, "Update message is required"),
@@ -62,7 +63,7 @@ export async function POST(
 
     return NextResponse.json(updatedIssue);
   } catch (error) {
-    console.error("Error posting workshop update:", error);
+    logger.error("Error posting workshop update", error instanceof Error ? error : undefined);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: "Validation error", details: error.issues }, { status: 400 });
     }

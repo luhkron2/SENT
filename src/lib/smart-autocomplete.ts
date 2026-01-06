@@ -262,13 +262,13 @@ export function extractVehicleInfo(description: string): {
 
   // Extract odometer reading (e.g., "123,456 km" or "123456km")
   const odometerMatch = description.match(/(\d+[,.]?\d*)\s*(km|kilometers)/i);
-  if (odometerMatch) {
+  if (odometerMatch && odometerMatch[1]) {
     result.hasOdometer = parseInt(odometerMatch[1].replace(/[,]/g, ''));
   }
 
   // Extract PSI reading (e.g., "60 PSI" or "60psi")
   const psiMatch = description.match(/(\d+)\s*psi/i);
-  if (psiMatch) {
+  if (psiMatch && psiMatch[1]) {
     result.hasPSI = parseInt(psiMatch[1]);
   }
 

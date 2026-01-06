@@ -13,10 +13,7 @@ import Link from 'next/link';
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +21,7 @@ export default function LoginPage() {
 
     try {
       const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
+        password,
         redirect: false,
       });
 
@@ -53,23 +49,12 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -86,10 +71,9 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 p-4 bg-muted rounded-lg text-xs">
-            <p className="font-semibold mb-2">Test Accounts:</p>
-            <p>workshop@example.com / password123</p>
-            <p>ops@example.com / password123</p>
-            <p>admin@example.com / password123</p>
+            <p className="font-semibold mb-2">Test Passwords (Development):</p>
+            <p>Workshop: SENATIONAL04</p>
+            <p>Operations: SENATIONAL07</p>
           </div>
         </CardContent>
       </Card>

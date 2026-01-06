@@ -20,6 +20,7 @@ function isRateLimited(ip: string, limit = 50, windowMs = 60000): boolean {
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
+  const accessLevel = req.cookies.get('accessLevel')?.value;
   const ip =
     req.headers.get('x-forwarded-for') ||
     req.headers.get('x-real-ip') ||
@@ -54,12 +55,21 @@ export default auth((req) => {
   const protectedRoutes = ['/workshop', '/operations', '/schedule', '/issues', '/admin'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  const role = req.auth?.user?.role;
+  const roleFromAuth = req.auth?.user?.role;
+  const roleFromAccess =
+    accessLevel === 'operations'
+      ? 'OPERATIONS'
+      : accessLevel === 'workshop'
+        ? 'WORKSHOP'
+        : accessLevel === 'admin'
+          ? 'ADMIN'
+          : undefined;
+  const role = roleFromAuth ?? roleFromAccess;
 
-  if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL('/login', req.url);
-    loginUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (isProtectedRoute && !isLoggedIn && !roleFromAccess) {
+    const homeUrl = new URL('/', req.url);
+    homeUrl.searchParams.set('access', 'required');
+    return NextResponse.redirect(homeUrl);
   }
 
   // Role-based gates to keep drivers out of staff areas
@@ -69,26 +79,26 @@ export default auth((req) => {
 
   if (pathname.startsWith('/operations')) {
     if (role !== 'OPERATIONS' && role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/workshop', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
   if (pathname.startsWith('/workshop')) {
     if (role !== 'WORKSHOP' && role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/operations', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
   if (pathname.startsWith('/schedule') || pathname.startsWith('/issues')) {
     if (role !== 'WORKSHOP' && role !== 'OPERATIONS' && role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
   // Admin-only routes
   if (pathname.startsWith('/admin')) {
     if (role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/workshop', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/../auth';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const commentSchema = z.object({
   body: z.string().min(1),
@@ -40,7 +41,7 @@ export async function POST(
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
-    console.error('Error creating comment:', error);
+    logger.error('Error creating comment', error instanceof Error ? error : undefined);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.issues },

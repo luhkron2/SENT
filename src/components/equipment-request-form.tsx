@@ -29,13 +29,13 @@ import { Package, Loader2, AlertCircle } from 'lucide-react';
 const equipmentRequestSchema = z.object({
   itemName: z.string().min(1, 'Item name is required'),
   itemDescription: z.string().optional(),
-  quantity: z.number().min(1, 'Quantity must be at least 1').default(1),
+  quantity: z.number().min(1, 'Quantity must be at least 1'),
   estimatedCost: z.string().optional(),
   supplier: z.string().optional(),
   partNumber: z.string().optional(),
   reason: z.string().min(10, 'Please provide a reason (at least 10 characters)'),
   fleetNumber: z.string().optional(),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).default('MEDIUM'),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
   urgentReason: z.string().optional(),
 }).refine(
   (data) => {
@@ -50,7 +50,7 @@ const equipmentRequestSchema = z.object({
   }
 );
 
-type EquipmentRequestForm = z.infer<typeof equipmentRequestSchema>;
+type EquipmentRequestFormData = z.infer<typeof equipmentRequestSchema>;
 
 interface EquipmentRequestFormProps {
   issueId?: string;
@@ -77,7 +77,7 @@ export function EquipmentRequestForm({
     formState: { errors },
     watch,
     reset,
-  } = useForm<EquipmentRequestForm>({
+  } = useForm<EquipmentRequestFormData>({
     resolver: zodResolver(equipmentRequestSchema),
     defaultValues: {
       quantity: 1,
@@ -88,7 +88,7 @@ export function EquipmentRequestForm({
 
   const priority = watch('priority');
 
-  const onSubmit = async (data: EquipmentRequestForm) => {
+  const onSubmit = async (data: EquipmentRequestFormData) => {
     setLoading(true);
 
     try {
@@ -98,7 +98,6 @@ export function EquipmentRequestForm({
         body: JSON.stringify({
           ...data,
           issueId,
-          quantity: parseInt(data.quantity.toString()),
         }),
       });
 

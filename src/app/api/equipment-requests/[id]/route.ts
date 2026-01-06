@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { auth } from '@/../auth';
+import { logger } from '@/lib/logger';
 
 // GET /api/equipment-requests/[id] - Get single equipment request
 export async function GET(
@@ -46,7 +47,7 @@ export async function GET(
 
     return NextResponse.json({ request: equipmentRequest });
   } catch (error) {
-    console.error('Error fetching equipment request:', error);
+    logger.error('Error fetching equipment request', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to fetch equipment request' },
       { status: 500 }
@@ -133,7 +134,7 @@ export async function PATCH(
 
     return NextResponse.json({ request: updated });
   } catch (error) {
-    console.error('Error updating equipment request:', error);
+    logger.error('Error updating equipment request', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to update equipment request' },
       { status: 500 }
@@ -172,7 +173,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting equipment request:', error);
+    logger.error('Error deleting equipment request', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to delete equipment request' },
       { status: 500 }

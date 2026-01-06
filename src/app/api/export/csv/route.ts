@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/../auth';
 import { generateCSV } from '@/lib/export';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error exporting CSV:', error);
+    logger.error('Error exporting CSV', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to export CSV' },
       { status: 500 }

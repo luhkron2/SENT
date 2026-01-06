@@ -44,7 +44,7 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 /**
  * Convert base64 VAPID key to Uint8Array
  */
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+function urlBase64ToUint8Array(base64String: string): BufferSource {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
@@ -54,7 +54,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
-  return outputArray;
+  return outputArray as BufferSource;
 }
 
 /**
@@ -172,7 +172,6 @@ export async function showLocalNotification(
     await registration.showNotification(title, {
       icon: '/icon-192.png',
       badge: '/icon-96.png',
-      vibrate: [200, 100, 200],
       ...options,
     });
   } catch (error) {
@@ -216,12 +215,6 @@ export async function notifyIssueStatusChange(
     data: {
       url: `/issues/${ticketNumber}`,
     },
-    actions: [
-      {
-        action: 'view',
-        title: 'View Details',
-      },
-    ],
   });
 }
 

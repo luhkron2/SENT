@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { auth } from '@/../auth';
+import { logger } from '@/lib/logger';
 
 // GET /api/equipment-requests - Get all equipment requests (with optional filters)
 export async function GET(request: NextRequest) {
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ requests });
   } catch (error) {
-    console.error('Error fetching equipment requests:', error);
+    logger.error('Error fetching equipment requests', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to fetch equipment requests' },
       { status: 500 }
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ request: equipmentRequest }, { status: 201 });
   } catch (error) {
-    console.error('Error creating equipment request:', error);
+    logger.error('Error creating equipment request', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to create equipment request' },
       { status: 500 }

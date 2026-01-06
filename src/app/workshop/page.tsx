@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LogOut, Filter, Wrench, GripVertical } from 'lucide-react';
+import { LogOut, Filter, Wrench, GripVertical, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -220,6 +220,12 @@ export default function WorkshopPage() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/schedule">
+              <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg">
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">Schedule</span>
+              </Button>
+            </Link>
             <ThemeToggle />
             <NotificationBell />
             <div className="hidden md:flex items-center gap-2 rounded-full border-2 border-orange-200/60 bg-orange-50/80 px-4 py-2 dark:border-orange-900/40 dark:bg-orange-900/20">
@@ -246,6 +252,27 @@ export default function WorkshopPage() {
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 md:text-5xl dark:text-white">Repair Queue Management</h1>
             <p className="max-w-3xl text-lg text-gray-600 dark:text-gray-300">Track repairs, update job progress, and coordinate with operations for parts and scheduling.</p>
           </div>
+
+          {/* Quick Actions Banner */}
+          <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-800">
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                  <Calendar className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-blue-900 dark:text-blue-100">Interactive Calendar View</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">Drag & drop to schedule. Click issues to book service slots.</p>
+                </div>
+              </div>
+              <Link href="/schedule">
+                <Button size="lg" className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg">
+                  <Calendar className="w-5 h-5" />
+                  Open Calendar
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
 
           {/* Filters */}
           <div className="flex flex-wrap gap-4">

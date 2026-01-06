@@ -9,8 +9,9 @@ const accessSchema = z.object({
 
 // Get passwords from environment variables with fallbacks for development
 const ACCESS_PASSWORDS: Record<string, string> = {
-  operations: process.env.OPERATIONS_PASSWORD || 'ops123',
-  workshop: process.env.WORKSHOP_PASSWORD || 'workshop123',
+  // Defaults updated to match latest production passwords in case env vars are missing
+  operations: process.env.OPERATIONS_PASSWORD || 'SENATIONAL07',
+  workshop: process.env.WORKSHOP_PASSWORD || 'SENATIONAL04',
 };
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -30,11 +31,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const isValid = secureCompare(validated.password, expectedPassword);
 
     if (isValid) {
-      return NextResponse.json({ 
-        success: true, 
+      const response = NextResponse.json({
+        success: true,
         accessType: validated.accessType,
         redirect: validated.accessType === 'operations' ? '/operations' : '/workshop'
       });
+      response.cookies.set('accessLevel', validated.accessType, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 12, // 12 hours
+      });
+      return response;
     } else {
       return NextResponse.json(
         { error: 'Invalid password' },
