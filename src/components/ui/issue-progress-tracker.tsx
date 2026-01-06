@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, FileText, Wrench, Calendar, CheckCircle2 } from 'lucide-react';
+import { FileText, Wrench, Calendar, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Status } from '@prisma/client';
 

@@ -25,7 +25,7 @@ import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/components/translation-provider';
 import { QuickActionsMenu } from '@/components/quick-actions-menu';
-import { QuickReportTemplates, type QuickTemplate } from '@/components/quick-report-templates';
+import { DriverLiveFeed } from '@/components/driver-live-feed';
 
 const reportSchema = z.object({
   driverName: z.string().min(1, 'Driver name is required'),
@@ -345,16 +345,6 @@ const useGPS = () => {
     } else {
       toast.info('No data available to auto-fill. Please select a fleet number or driver first.');
     }
-  };
-
-  const handleTemplateSelect = (template: QuickTemplate) => {
-    setValue('category', template.category);
-    setValue('severity', template.severity);
-    setValue('description', template.description);
-    setValue('safeToContinue', template.safeToContinue);
-    
-    // Smooth scroll to form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 
@@ -877,7 +867,7 @@ const onSubmit = async (data: ReportForm) => {
           </Card>
 
           <aside className="space-y-6">
-            <QuickReportTemplates onSelectTemplate={handleTemplateSelect} />
+            <DriverLiveFeed maxItems={8} />
             
             <div className="rounded-3xl border border-slate-200/70 bg-white/95 p-6 shadow-lg dark:border-slate-800 dark:bg-slate-900/80">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Common issues</h3>

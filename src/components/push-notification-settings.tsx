@@ -126,7 +126,7 @@ export function PushNotificationSettings() {
             <div>
               <CardTitle>Push Notifications Unavailable</CardTitle>
               <CardDescription className="text-amber-700 dark:text-amber-300">
-                Your browser doesn't support push notifications
+                Your browser doesn&apos;t support push notifications
               </CardDescription>
             </div>
           </div>
@@ -247,8 +247,8 @@ export function PushNotificationSettings() {
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
             <p className="font-medium">Permission Blocked</p>
             <p className="mt-1 text-xs">
-              You've blocked notifications. To enable them, click the lock icon in your
-              browser's address bar and allow notifications for this site.
+              You&apos;ve blocked notifications. To enable them, click the lock icon in your
+              browser&apos;s address bar and allow notifications for this site.
             </p>
           </div>
         )}
