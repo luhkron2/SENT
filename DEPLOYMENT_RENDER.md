@@ -90,7 +90,7 @@ DATABASE_URL="..." npm run db:seed
    - Submit a test issue with 1–2 small attachments; wait for the thank-you page with ticket number.  
    - In the Render Postgres dashboard (or via `render shell` + `psql`), query `SELECT ticket, driverName FROM "Issue" ORDER BY "createdAt" DESC LIMIT 1;`
 3. **Authentication & RBAC**  
-   - Log in at `/login` with the seeded `admin@example.com` account (`password123`).  
+   - Log in at the homepage by selecting Operations or Workshop and entering password `SENATIONAL07` or `SENATIONAL04`.  
    - Hit `/operations` and `/workshop` to verify they redirect unauthenticated users but load once you’re signed in.
 4. **File storage**  
    - Inspect the S3 bucket for newly uploaded objects; confirm they are publicly accessible at the URL returned from `/api/upload`.  

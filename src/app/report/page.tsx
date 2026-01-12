@@ -60,9 +60,71 @@ export default function ReportPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [isOffline, setIsOffline] = useState(false);
   const [queueLength, setQueueLength] = useState(0);
+  const [_location, setLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
   const uploadHint = `Accepted formats: JPG, PNG, WEBP, GIF, MP4/MOV/AVI up to ${FILE_UPLOAD.maxSizeMB}MB each (${FILE_UPLOAD.maxFiles} files max).`;
   
-  // Get dropdown data from database mappings
+  // Get current location
+  const getCurrentLocation = useCallback(async (setValueFn?: (field: 'location', value: string) => void) => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by this browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation({ lat: latitude, lng: longitude });
+        
+        // Try to get address from coordinates
+        try {
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const address = `${data.locality}, ${data.principalSubdivision}`;
+            setLocation({ lat: latitude, lng: longitude, address });
+            if (setValueFn) setValueFn('location', address);
+          }
+        } catch (error) {
+          console.error('Failed to get address:', error);
+          if (setValueFn) setValueFn('location', `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        }
+        
+        setGettingLocation(false);
+        toast.success('Location captured');
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setGettingLocation(false);
+        toast.error('Unable to get location. Please enter manually.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
+  }, []);
+
+  // Camera capture for mobile
+  const capturePhoto = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // Use rear camera
+    input.multiple = true;
+    
+    input.onchange = (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files) {
+        const newFiles = Array.from(target.files);
+        setFiles(prev => [...prev, ...newFiles].slice(0, FILE_UPLOAD.maxFiles));
+        toast.success(`${newFiles.length} photo(s) added`);
+      }
+    };
+    
+    input.click();
+  }, []);
   const fleetNumbers = mappings
     ? Object.keys(mappings.fleets)
         .filter((fleet) => isActiveStatus(mappings.fleets[fleet]?.status))
@@ -512,17 +574,48 @@ const onSubmit = async (data: ReportForm) => {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-6 p-8 pt-4">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <CardContent className="space-y-4 p-4 sm:p-8 pt-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+                {/* Mobile Quick Actions */}
+                <div className="flex flex-wrap gap-2 sm:hidden">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => getCurrentLocation(setValue)}
+                    disabled={gettingLocation}
+                    className="flex-1 min-w-0"
+                  >
+                    {gettingLocation ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <MapPin className="w-4 h-4 mr-2" />
+                    )}
+                    <span className="truncate">
+                      {gettingLocation ? 'Getting...' : 'Get Location'}
+                    </span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={capturePhoto}
+                    className="flex-1 min-w-0"
+                  >
+                    <Truck className="w-4 h-4 mr-2" />
+                    <span className="truncate">Take Photos</span>
+                  </Button>
+                </div>
+
                 {/* Driver Info */}
-                <section className="rounded-2xl border border-slate-200/70 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{t.report.driverInfo}</h3>
+                <section className="rounded-xl border border-slate-200/70 bg-white/90 p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">{t.report.driverInfo}</h3>
                     <span className="text-xs uppercase tracking-[0.35em] text-slate-400 dark:text-slate-500">{t.report.step1}</span>
                   </div>
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="driverName">{t.report.driverName}</Label>
+                      <Label htmlFor="driverName" className="text-sm font-medium">{t.report.driverName}</Label>
                       {drivers.length > 0 ? (
                         <Controller
                           control={control}
@@ -532,12 +625,12 @@ const onSubmit = async (data: ReportForm) => {
                               value={field.value || undefined}
                               onValueChange={(value: string) => field.onChange(value)}
                             >
-                              <SelectTrigger id="driverName">
+                              <SelectTrigger id="driverName" className="h-12 text-base">
                                 <SelectValue placeholder={translate('Select driver')} />
                               </SelectTrigger>
                               <SelectContent>
                                 {drivers.map((driver) => (
-                                  <SelectItem key={driver} value={driver}>
+                                  <SelectItem key={driver} value={driver} className="text-base py-3">
                                     {driver}
                                   </SelectItem>
                                 ))}
@@ -546,13 +639,24 @@ const onSubmit = async (data: ReportForm) => {
                           )}
                         />
                       ) : (
-                        <Input id="driverName" {...register('driverName')} placeholder="e.g. Alex Martin" />
+                        <Input 
+                          id="driverName" 
+                          {...register('driverName')} 
+                          placeholder="e.g. Alex Martin" 
+                          className="h-12 text-base"
+                        />
                       )}
                       {errors.driverName && <p className="text-sm text-destructive">{errors.driverName.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="driverPhone">{t.report.driverPhone}</Label>
-                      <Input id="driverPhone" type="tel" {...register('driverPhone')} placeholder="+61 4xx xxx xxx" />
+                      <Label htmlFor="driverPhone" className="text-sm font-medium">{t.report.driverPhone}</Label>
+                      <Input 
+                        id="driverPhone" 
+                        type="tel" 
+                        {...register('driverPhone')} 
+                        placeholder="+61 4xx xxx xxx" 
+                        className="h-12 text-base"
+                      />
                     </div>
                   </div>
                 </section>

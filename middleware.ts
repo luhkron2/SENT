@@ -1,6 +1,4 @@
-import { auth } from './auth';
-import { NextResponse } from 'next/server';
-// no explicit type to allow NextAuth to augment request with auth
+import { NextRequest, NextResponse } from 'next/server';
 
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 function isRateLimited(ip: string, limit = 50, windowMs = 60000): boolean {
@@ -17,14 +15,18 @@ function isRateLimited(ip: string, limit = 50, windowMs = 60000): boolean {
   return false;
 }
 
-export default auth((req) => {
+export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isLoggedIn = !!req.auth;
   const accessLevel = req.cookies.get('accessLevel')?.value;
   const ip =
     req.headers.get('x-forwarded-for') ||
     req.headers.get('x-real-ip') ||
     'unknown';
+
+  // Debug logging for admin routes
+  if (pathname.startsWith('/admin')) {
+    console.log(`[MIDDLEWARE] Admin route: ${pathname}, accessLevel: ${accessLevel}`);
+  }
 
   if (pathname.startsWith('/api/')) {
     if (isRateLimited(ip, 50, 60000)) {
@@ -33,29 +35,18 @@ export default auth((req) => {
   }
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/report', '/login', '/api/issues', '/api/upload', '/api/mappings'];
+  const publicRoutes = ['/', '/report', '/access', '/api/issues', '/api/upload', '/api/mappings', '/api/access', '/api/auth'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   // Allow public routes
   if (isPublicRoute) {
-    // But if it's POST /api/issues (public submission), allow it
-    if (pathname === '/api/issues' && req.method === 'POST') {
-      return NextResponse.next();
-    }
-    if (pathname.startsWith('/thanks/')) {
-      return NextResponse.next();
-    }
-    if (!isLoggedIn && !pathname.startsWith('/login')) {
-      // Allow public access
-      return NextResponse.next();
-    }
+    return NextResponse.next();
   }
 
   // Protected routes
-  const protectedRoutes = ['/workshop', '/operations', '/schedule', '/issues', '/admin'];
+  const protectedRoutes = ['/workshop', '/operations', '/schedule', '/issues', '/admin', '/fleet'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  const roleFromAuth = req.auth?.user?.role;
   const roleFromAccess =
     accessLevel === 'operations'
       ? 'OPERATIONS'
@@ -64,40 +55,45 @@ export default auth((req) => {
         : accessLevel === 'admin'
           ? 'ADMIN'
           : undefined;
-  const role = roleFromAuth ?? roleFromAccess;
 
-  if (isProtectedRoute && !isLoggedIn && !roleFromAccess) {
-    const homeUrl = new URL('/', req.url);
-    homeUrl.searchParams.set('access', 'required');
-    return NextResponse.redirect(homeUrl);
+  if (isProtectedRoute && !roleFromAccess) {
+    console.log(`[MIDDLEWARE] Redirecting to access: ${pathname}, no access level found`);
+    const accessUrl = new URL('/access', req.url);
+    return NextResponse.redirect(accessUrl);
   }
 
-  // Role-based gates to keep drivers out of staff areas
-  if (role === 'DRIVER' && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/report', req.url));
+  // Role-based gates
+  // Role-based gates - only redirect if no valid role
+  if (!roleFromAccess && isProtectedRoute) {
+    console.log(`[MIDDLEWARE] Redirecting to access: ${pathname}, no access level found`);
+    const accessUrl = new URL('/access', req.url);
+    return NextResponse.redirect(accessUrl);
+  }
+
+  // Admin-only routes
+  if (pathname.startsWith('/admin')) {
+    if (roleFromAccess !== 'ADMIN') {
+      console.log(`[MIDDLEWARE] Admin access denied: ${pathname}, role: ${roleFromAccess}`);
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    console.log(`[MIDDLEWARE] Admin access granted: ${pathname}, role: ${roleFromAccess}`);
   }
 
   if (pathname.startsWith('/operations')) {
-    if (role !== 'OPERATIONS' && role !== 'ADMIN') {
+    if (roleFromAccess !== 'OPERATIONS' && roleFromAccess !== 'ADMIN') {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
   if (pathname.startsWith('/workshop')) {
-    if (role !== 'WORKSHOP' && role !== 'ADMIN') {
+    if (roleFromAccess !== 'WORKSHOP' && roleFromAccess !== 'ADMIN') {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
-  if (pathname.startsWith('/schedule') || pathname.startsWith('/issues')) {
-    if (role !== 'WORKSHOP' && role !== 'OPERATIONS' && role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-  }
-
-  // Admin-only routes
-  if (pathname.startsWith('/admin')) {
-    if (role !== 'ADMIN') {
+  // Check /schedule, /issues, /fleet (but not /admin/issues, /admin/workorders, etc.)
+  if (!pathname.startsWith('/admin') && (pathname.startsWith('/schedule') || pathname.startsWith('/issues') || pathname.startsWith('/fleet'))) {
+    if (roleFromAccess !== 'WORKSHOP' && roleFromAccess !== 'OPERATIONS' && roleFromAccess !== 'ADMIN') {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
@@ -117,7 +113,7 @@ export default auth((req) => {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
   return response;
-});
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|.*\\.png$|.*\\.jpg$|.*\\.svg$|favicon.ico).*)'],

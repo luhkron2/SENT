@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -46,6 +46,21 @@ enum EquipmentPriority {
   URGENT
 }
 
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  OVERDUE
+}
+
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  PREDICTIVE
+  INSPECTION
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String?
@@ -57,9 +72,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  workOrders         WorkOrder[]
-  comments           Comment[]
-  equipmentRequests  EquipmentRequest[]
+  workOrders           WorkOrder[]
+  comments             Comment[]
+  equipmentRequests    EquipmentRequest[]
+  maintenanceSchedules MaintenanceSchedule[]
 }
 
 model Issue {
@@ -131,6 +147,91 @@ model Mapping {
   updatedAt DateTime @updatedAt
   
   @@unique([kind, key], name: "kind_key")
+}
+
+model MaintenanceSchedule {
+  id          String            @id @default(cuid())
+  fleetNumber String
+  title       String
+  description String?
+  type        MaintenanceType   @default(PREVENTIVE)
+  status      MaintenanceStatus @default(SCHEDULED)
+  scheduledAt DateTime
+  completedAt DateTime?
+  assignedToId String?
+  assignedTo   User?            @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  priority    Severity         @default(MEDIUM)
+  estimatedHours Float?
+  actualHours    Float?
+  cost        Float?
+  notes       String?
+  recurring   Boolean          @default(false)
+  recurringInterval String?    // "daily", "weekly", "monthly", "yearly"
+  recurringNextDate DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  tasks       MaintenanceTask[]
+  
+  @@index([fleetNumber])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model MaintenanceTask {
+  id                   String             @id @default(cuid())
+  maintenanceScheduleId String
+  maintenanceSchedule   MaintenanceSchedule @relation(fields: [maintenanceScheduleId], references: [id], onDelete: Cascade)
+  name                 String
+  description          String?
+  completed            Boolean            @default(false)
+  completedAt          DateTime?
+  notes                String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+}
+
+model CostRecord {
+  id          String   @id @default(cuid())
+  issueId     String?
+  workOrderId String?
+  maintenanceScheduleId String?
+  category    String   // "parts", "labor", "external", "other"
+  description String
+  amount      Float
+  currency    String   @default("AUD")
+  supplier   String?
+  invoiceNumber String?
+  invoiceDate DateTime?
+  approvedBy  String?
+  approvedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([issueId])
+  @@index([workOrderId])
+  @@index([maintenanceScheduleId])
+}
+
+model DriverPerformance {
+  id          String   @id @default(cuid())
+  driverName  String
+  driverEmail String?
+  fleetNumber String?
+  periodStart DateTime
+  periodEnd   DateTime
+  issuesReported Int    @default(0)
+  issuesResolved Int    @default(0)
+  avgResponseTime Float?
+  safeDrivingScore Float?
+  fuelEfficiency Float?
+  onTimeDeliveryRate Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([driverName])
+  @@index([periodStart])
 }
 
 model EquipmentRequest {

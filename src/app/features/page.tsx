@@ -261,10 +261,10 @@ export default function FeaturesPage() {
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
-                  <Link href="/login">
+                  <Link href="/access">
                     <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                       <Users className="mr-2 h-5 w-5" />
-                      Staff Login
+                      Staff Access
                     </Button>
                   </Link>
                 </div>

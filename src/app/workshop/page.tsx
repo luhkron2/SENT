@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LogOut, Filter, Wrench, GripVertical, Calendar } from 'lucide-react';
+import { LogOut, Filter, Wrench, GripVertical, Calendar, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -23,6 +23,12 @@ import { toast } from 'sonner';
 import { LoadingPage } from '@/components/ui/loading';
 import { cn } from '@/lib/utils';
 
+import { Badge } from '@/components/ui/badge';
+import { SmartPrioritization, type PriorityScore } from '@/lib/prioritization';
+import { PartsAvailability } from '@/components/parts-availability';
+import { NotificationService } from '@/lib/notifications';
+import { RealTimeIndicator } from '@/components/real-time-indicator';
+
 export default function WorkshopPage() {
   const { isAuthenticated, accessLevel, loading, logout } = useAuth();
   const router = useRouter();
@@ -36,18 +42,70 @@ export default function WorkshopPage() {
   const [submittingUpdate, setSubmittingUpdate] = useState(false);
   const [draggedIssueId, setDraggedIssueId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+  const [priorityScores, setPriorityScores] = useState<Record<string, PriorityScore>>({});
+  const [showSmartPriority, setShowSmartPriority] = useState(false);
 
   const fetchIssues = useCallback(async () => {
     try {
       const response = await fetch('/api/issues');
       if (response.ok) {
         const data = await response.json();
-        setIssues(Array.isArray(data) ? data : (data.issues ?? []));
+        const issuesData = Array.isArray(data) ? data : (data.issues ?? []);
+        setIssues(issuesData);
       }
     } catch (error) {
       console.error('Failed to fetch issues:', error);
     }
   }, []);
+
+  // Separate function to calculate priorities - only called when showSmartPriority is toggled on
+  const calculatePriorities = useCallback(async (issuesData: Issue[]) => {
+    if (!showSmartPriority || issuesData.length === 0) return;
+    
+    const scores: Record<string, PriorityScore> = {};
+    // Only calculate for first 10 issues to avoid blocking
+    const issuesToProcess = issuesData.slice(0, 10);
+    
+    for (const issue of issuesToProcess) {
+      try {
+        const factors = {
+          severity: issue.severity,
+          fleetUtilization: await SmartPrioritization.getFleetUtilization(issue.fleetNumber),
+          routeCriticality: await SmartPrioritization.getRouteCriticality(issue.fleetNumber),
+          historicalRepairTime: await SmartPrioritization.getHistoricalRepairTime(issue.category, issue.severity),
+          partsAvailability: await SmartPrioritization.checkPartsAvailability(issue.category),
+          driverExperience: 'EXPERIENCED' as const,
+          timeOfDay: new Date().getHours(),
+          dayOfWeek: new Date().getDay()
+        };
+        scores[issue.id] = SmartPrioritization.calculatePriority(factors);
+      } catch (error) {
+        console.error('Failed to calculate priority for issue:', issue.id, error);
+      }
+    }
+    setPriorityScores(scores);
+  }, [showSmartPriority]);
+
+  interface RealTimeEvent {
+    type: string;
+    data?: Record<string, unknown>;
+  }
+
+  const handleRealTimeUpdate = useCallback((event: RealTimeEvent) => {
+    if (event.type === 'issue_created' || event.type === 'issue_updated') {
+      // Refresh issues when updates come in
+      void fetchIssues();
+      if (event.type === 'issue_created') {
+        const eventData = event.data as { severity?: string; fleetNumber?: string } | undefined;
+        toast.info(`New ${eventData?.severity || 'issue'} reported: ${eventData?.fleetNumber || 'Unknown fleet'}`);
+        
+        // Send notifications for new issues
+        if (event.data) {
+          NotificationService.notifyNewIssue(event.data as Issue & { driverName: string });
+        }
+      }
+    }
+  }, [fetchIssues]);
 
   useEffect(() => {
     if (!loading) {
@@ -58,6 +116,13 @@ export default function WorkshopPage() {
       void fetchIssues();
     }
   }, [loading, isAuthenticated, accessLevel, router, fetchIssues]);
+
+  // Calculate priorities when showSmartPriority is toggled on
+  useEffect(() => {
+    if (showSmartPriority && issues.length > 0) {
+      calculatePriorities(issues);
+    }
+  }, [showSmartPriority, issues, calculatePriorities]);
 
   const filteredIssues = useMemo(() => {
     let filtered = [...issues];
@@ -218,16 +283,30 @@ export default function WorkshopPage() {
                 </span>
               </div>
             </Link>
+            <nav className="hidden md:flex items-center gap-1">
+              {[
+                { href: '/workshop', label: 'Dashboard', current: true },
+                { href: '/fleet', label: 'Fleet', current: false },
+                { href: '/schedule', label: 'Schedule', current: false }
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                    item.current
+                      ? 'bg-orange-50 text-orange-700 shadow-sm dark:bg-orange-900/30 dark:text-orange-300'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900/70 dark:hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/schedule">
-              <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg">
-                <Calendar className="w-4 h-4" />
-                <span className="hidden sm:inline">Schedule</span>
-              </Button>
-            </Link>
             <ThemeToggle />
             <NotificationBell />
+            <RealTimeIndicator onUpdate={handleRealTimeUpdate} />
             <div className="hidden md:flex items-center gap-2 rounded-full border-2 border-orange-200/60 bg-orange-50/80 px-4 py-2 dark:border-orange-900/40 dark:bg-orange-900/20">
               <Wrench className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">{issues.length} issues</span>
@@ -298,6 +377,15 @@ export default function WorkshopPage() {
               onChange={(e) => setFleetFilter(e.target.value)}
               className="max-w-xs"
             />
+
+            <Button
+              variant={showSmartPriority ? "default" : "outline"}
+              onClick={() => setShowSmartPriority(!showSmartPriority)}
+              className="gap-2"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Smart Priority
+            </Button>
           </div>
         </div>
 
@@ -353,11 +441,61 @@ export default function WorkshopPage() {
                           <div className="absolute -left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <GripVertical className="h-4 w-4 text-muted-foreground" />
                           </div>
-                          <IssueCard
-                            issue={issue}
-                            onSchedule={() => {}}
-                            onComment={() => openUpdateDialog(issue)}
-                          />
+                          
+                          {/* Smart Priority Indicator */}
+                          {showSmartPriority && priorityScores[issue.id] && (
+                            <div className="absolute -top-2 -right-2 z-10">
+                              <Badge 
+                                variant={
+                                  priorityScores[issue.id]?.priority === 'EMERGENCY' ? 'destructive' :
+                                  priorityScores[issue.id]?.priority === 'CRITICAL' ? 'destructive' :
+                                  priorityScores[issue.id]?.priority === 'HIGH' ? 'default' :
+                                  'secondary'
+                                }
+                                className="text-xs px-1 py-0"
+                              >
+                                {priorityScores[issue.id]?.score}
+                              </Badge>
+                            </div>
+                          )}
+                          
+                          <div className="space-y-2">
+                            <IssueCard
+                              issue={issue}
+                              onSchedule={() => router.push('/schedule')}
+                              onComment={() => openUpdateDialog(issue)}
+                            />
+                            
+                            {/* Smart Priority Details */}
+                            {showSmartPriority && priorityScores[issue.id] && (
+                              <div className="text-xs space-y-1 p-2 bg-slate-50 dark:bg-slate-800 rounded">
+                                <div className="font-medium text-slate-700 dark:text-slate-300">
+                                  Priority: {priorityScores[issue.id]?.priority}
+                                </div>
+                                <div className="text-slate-600 dark:text-slate-400">
+                                  {priorityScores[issue.id]?.recommendedAction}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Parts Availability for IN_PROGRESS issues */}
+                            {issue.status === 'IN_PROGRESS' && (
+                              <PartsAvailability 
+                                category={issue.category}
+                                className="mt-2"
+                                onPartsStatusChange={(available, info) => {
+                                  if (!available && info.orderRequired) {
+                                    NotificationService.notifyPartsNeeded({
+                                      fleetNumber: issue.fleetNumber,
+                                      category: issue.category,
+                                      estimatedCost: info.estimatedCost,
+                                      leadTime: info.leadTime
+                                    });
+                                  }
+                                }}
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NotificationBell } from '@/components/notification-bell';
+import { LoadingPage } from '@/components/ui/loading';
 
 import { toast } from 'sonner';
 import { Issue } from '@prisma/client';
@@ -23,22 +24,23 @@ import { TruckBooking } from '@/components/truck-booking';
 
 
 export default function OperationsPage() {
-  const { isAuthenticated, accessLevel, loading, logout } = useAuth();
+  const { isAuthenticated, accessLevel, loading: authLoading, logout } = useAuth();
   const router = useRouter();
   const [issues, setIssues] = useState<Issue[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'critical'>('all');
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading) {
+    if (!authLoading) {
       if (!isAuthenticated || accessLevel !== 'operations') {
         router.push('/access');
         return;
       }
       fetchIssues();
     }
-  }, [loading, isAuthenticated, accessLevel, router]);
+  }, [authLoading, isAuthenticated, accessLevel, router]);
 
   useEffect(() => {
     const search = searchQuery.trim().toLowerCase();
@@ -65,6 +67,7 @@ export default function OperationsPage() {
 
   const fetchIssues = async () => {
     try {
+      setDataLoading(true);
       const response = await fetch('/api/issues');
       if (response.ok) {
         const data = await response.json();
@@ -75,6 +78,8 @@ export default function OperationsPage() {
     } catch (error) {
       console.error('Failed to fetch issues:', error);
       toast.error('Failed to load issues. Please refresh the page.');
+    } finally {
+      setDataLoading(false);
     }
   };
 
@@ -145,7 +150,20 @@ export default function OperationsPage() {
     }
   };
 
+  // Show loading while checking auth
+  if (authLoading) {
+    return <LoadingPage text="Checking authentication..." />;
+  }
 
+  // Redirect handled by useEffect
+  if (!isAuthenticated || accessLevel !== 'operations') {
+    return null;
+  }
+
+  // Show loading while fetching data
+  if (dataLoading) {
+    return <LoadingPage text="Loading operations dashboard..." />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -169,8 +187,8 @@ export default function OperationsPage() {
             <nav className="hidden md:flex items-center gap-1">
               {[
                 { href: '/operations', label: 'Dashboard', current: true },
-                { href: '/workshop', label: 'Workshop', current: false },
-                { href: '/admin/mappings', label: 'Admin', current: false }
+                { href: '/fleet', label: 'Fleet', current: false },
+                { href: '/workshop', label: 'Workshop', current: false }
               ].map((item) => (
                 <Link
                   key={item.href}

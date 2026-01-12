@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { AlertCircle, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { formatMelbourneShort } from '@/lib/time';
+import Link from 'next/link';
 
 interface Notification {
   id: string;
@@ -20,37 +23,69 @@ interface Notification {
   severity: 'critical' | 'high' | 'info';
   time: string;
   read: boolean;
+  issueId?: string;
 }
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    title: 'Critical Issue',
-    message: 'Fleet #442 reported brake failure',
-    severity: 'critical',
-    time: '5 min ago',
-    read: false
-  },
-  {
-    id: '2',
-    title: 'High Priority',
-    message: 'Fleet #338 requires urgent inspection',
-    severity: 'high',
-    time: '15 min ago',
-    read: false
-  },
-  {
-    id: '3',
-    title: 'Repair Completed',
-    message: 'Fleet #225 is ready for pickup',
-    severity: 'info',
-    time: '1 hour ago',
-    read: true
-  }
-];
-
 export function NotificationBell() {
-  const unreadCount = MOCK_NOTIFICATIONS.filter(n => !n.read).length;
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetchNotifications();
+    // Refresh notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch('/api/issues');
+      if (response.ok) {
+        const issues = await response.json();
+        
+        // Convert recent critical/high issues to notifications
+        const recentIssues = Array.isArray(issues) ? issues : [];
+        const now = Date.now();
+        const last24Hours = 24 * 60 * 60 * 1000;
+        
+        interface IssueData {
+          id: string;
+          createdAt: string;
+          severity: string;
+          status: string;
+          fleetNumber: string;
+          description: string;
+        }
+        
+        const notifs: Notification[] = recentIssues
+          .filter((issue: IssueData) => {
+            const issueTime = new Date(issue.createdAt).getTime();
+            const isRecent = now - issueTime < last24Hours;
+            const isImportant = ['CRITICAL', 'HIGH'].includes(issue.severity);
+            const isActive = !['COMPLETED', 'CLOSED', 'RESOLVED'].includes(issue.status);
+            return isRecent && (isImportant || issue.status === 'COMPLETED') && isActive;
+          })
+          .slice(0, 10)
+          .map((issue: IssueData) => ({
+            id: issue.id,
+            title: issue.severity === 'CRITICAL' ? 'Critical Issue' : 
+                   issue.severity === 'HIGH' ? 'High Priority' :
+                   issue.status === 'COMPLETED' ? 'Repair Completed' : 'New Issue',
+            message: `${issue.fleetNumber}: ${issue.description.substring(0, 50)}${issue.description.length > 50 ? '...' : ''}`,
+            severity: issue.severity === 'CRITICAL' ? 'critical' as const : 
+                     issue.severity === 'HIGH' ? 'high' as const : 'info' as const,
+            time: formatMelbourneShort(issue.createdAt),
+            read: issue.status === 'COMPLETED' || issue.status === 'CLOSED',
+            issueId: issue.id
+          }));
+        
+        setNotifications(notifs);
+        setUnreadCount(notifs.filter(n => !n.read).length);
+      }
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -79,14 +114,19 @@ export function NotificationBell() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-[400px] overflow-y-auto">
-          {MOCK_NOTIFICATIONS.map((notification) => (
-            <DropdownMenuItem
-              key={notification.id}
-              className={cn(
-                'flex flex-col items-start gap-2 p-4 cursor-pointer',
-                !notification.read && 'bg-blue-50/50 dark:bg-blue-950/20'
-              )}
-            >
+          {notifications.length === 0 ? (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              No new notifications
+            </div>
+          ) : (
+            notifications.map((notification) => (
+              <Link key={notification.id} href={notification.issueId ? `/issues/${notification.issueId}` : '#'}>
+                <DropdownMenuItem
+                  className={cn(
+                    'flex flex-col items-start gap-2 p-4 cursor-pointer',
+                    !notification.read && 'bg-blue-50/50 dark:bg-blue-950/20'
+                  )}
+                >
               <div className="flex w-full items-start gap-3">
                 <div className={cn(
                   'mt-0.5 rounded-full p-1.5',
@@ -117,7 +157,9 @@ export function NotificationBell() {
                 )}
               </div>
             </DropdownMenuItem>
-          ))}
+          </Link>
+          ))
+          )}
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="justify-center font-semibold text-blue-600 dark:text-blue-400">

@@ -5,14 +5,14 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ComponentType, SVGProps, useEffect, useState } from 'react';
-import { Home, FileText, Wrench, Settings, Activity, Phone, Moon, Sun, Menu, X } from 'lucide-react';
+import { Home, FileText, Wrench, Settings, Activity, Phone, Moon, Sun, Menu, X, Calendar, DollarSign, User } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
-  key: 'home' | 'report' | 'workshop' | 'operations' | 'troubleshoot';
+  key: 'home' | 'report' | 'workshop' | 'operations' | 'maintenance' | 'costs' | 'driverPerformance' | 'troubleshoot';
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
@@ -22,6 +22,9 @@ const navItems: NavItem[] = [
   { key: 'report', href: '/report', icon: FileText },
   { key: 'workshop', href: '/workshop', icon: Wrench },
   { key: 'operations', href: '/operations', icon: Settings },
+  { key: 'maintenance', href: '/maintenance', icon: Calendar },
+  { key: 'costs', href: '/costs', icon: DollarSign },
+  { key: 'driverPerformance', href: '/driver-performance', icon: User },
   { key: 'troubleshoot', href: '/troubleshoot', icon: Activity },
 ];
 
@@ -31,9 +34,6 @@ export function Navigation() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { t, translate } = useTranslation();
-
-  const driverRoutes = ['/', '/report', '/troubleshoot'];
-  const isDriverRoute = driverRoutes.includes(pathname);
 
   useEffect(() => {
     setMounted(true);

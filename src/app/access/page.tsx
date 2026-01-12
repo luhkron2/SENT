@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/ui/logo';
 import { Wrench, Settings, Shield, Home, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 const ACCESS_LEVELS = {
   operations: {
@@ -32,13 +34,41 @@ const ACCESS_LEVELS = {
       'Update job progress and attach completion notes',
       'Coordinate with operations for parts and scheduling'
     ]
+  },
+  admin: {
+    name: 'Admin',
+    description: 'System administration and analytics',
+    icon: Shield,
+    redirect: '/admin',
+    highlights: [
+      'Complete system overview and analytics dashboard',
+      'Manage users, fleet data, and system settings',
+      'Export data and generate comprehensive reports'
+    ]
   }
 };
 
 export default function AccessPage() {
+  const router = useRouter();
+  const { isAuthenticated, accessLevel, loading } = useAuth();
   const [selectedAccess, setSelectedAccess] = useState<string | null>(null);
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // If already authenticated, redirect to appropriate dashboard
+  useEffect(() => {
+    if (!loading && isAuthenticated && accessLevel) {
+      const redirectMap: Record<string, string> = {
+        operations: '/operations',
+        workshop: '/workshop',
+        admin: '/admin'
+      };
+      const redirect = redirectMap[accessLevel];
+      if (redirect) {
+        router.push(redirect);
+      }
+    }
+  }, [loading, isAuthenticated, accessLevel, router]);
 
   const handleAccessSelect = (accessType: string) => {
     setSelectedAccess(accessType);
@@ -49,7 +79,7 @@ export default function AccessPage() {
     e.preventDefault();
     if (!selectedAccess) return;
 
-    setLoading(true);
+    setSubmitting(true);
 
     try {
       const response = await fetch('/api/access', {
@@ -73,12 +103,12 @@ export default function AccessPage() {
       } else {
         toast.error(data.error || 'Invalid password. Please try again.');
         setPassword('');
-        setLoading(false);
+        setSubmitting(false);
       }
     } catch {
       toast.error('An error occurred. Please try again.');
       setPassword('');
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -86,6 +116,18 @@ export default function AccessPage() {
     setSelectedAccess(null);
     setPassword('');
   };
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (selectedAccess) {
     const accessConfig = ACCESS_LEVELS[selectedAccess as keyof typeof ACCESS_LEVELS];
@@ -124,8 +166,8 @@ export default function AccessPage() {
                 <Button type="button" variant="outline" onClick={handleBack} className="flex-1">
                   Back
                 </Button>
-                <Button type="submit" disabled={loading} className="flex-1">
-                  {loading ? 'Verifying...' : 'Access'}
+                <Button type="submit" disabled={submitting} className="flex-1">
+                  {submitting ? 'Verifying...' : 'Access'}
                 </Button>
               </div>
             </form>
@@ -180,7 +222,7 @@ export default function AccessPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {Object.entries(ACCESS_LEVELS).map(([key, config]) => {
             const IconComponent = config.icon;
             return (
