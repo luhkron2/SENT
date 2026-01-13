@@ -311,7 +311,7 @@ export default function WorkshopPage() {
               <Wrench className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">{issues.length} issues</span>
             </div>
-            <Button variant="outline" size="sm" onClick={logout} className="gap-2 font-semibold">
+            <Button variant="outline" size="default" onClick={logout} className="gap-2 font-semibold">
               <LogOut className="w-4 h-4" />
               Logout
             </Button>
@@ -320,7 +320,7 @@ export default function WorkshopPage() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto max-w-7xl px-4 py-10">
+      <div className="container mx-auto max-w-7xl px-6 py-8">
         <div className="mb-8 space-y-6">
           {/* Hero Section */}
           <div className="space-y-4">

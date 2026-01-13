@@ -211,7 +211,7 @@ export default function OperationsPage() {
               <Activity className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">{issues.length} tickets</span>
             </div>
-            <Button variant="outline" size="sm" onClick={logout} className="gap-2 font-semibold">
+            <Button variant="outline" size="default" onClick={logout} className="gap-2 font-semibold">
               <LogOut className="h-4 w-4" />
               Logout
             </Button>
@@ -219,7 +219,7 @@ export default function OperationsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto max-w-7xl px-4 py-10 space-y-8">
+      <main className="container mx-auto max-w-7xl px-6 py-8 space-y-8">
         {/* Hero Section */}
         <section className="space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-purple-200/70 bg-gradient-to-r from-purple-50 to-purple-100 px-5 py-2 text-sm font-semibold tracking-wide text-purple-700 shadow-sm dark:border-purple-900/40 dark:from-purple-900/20 dark:to-purple-900/30 dark:text-purple-300">
@@ -243,7 +243,7 @@ export default function OperationsPage() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat) => {
               const Icon = stat.icon;
               return (

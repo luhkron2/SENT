@@ -325,20 +325,20 @@ export default function FleetPage() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <NotificationBell />
-            <Button variant="outline" size="sm" onClick={logout} className="gap-2 font-semibold">
-              <LogOut className="w-4 h-4" />
+            <Button variant="outline" size="default" onClick={logout} className="gap-2 font-semibold">
+              <LogOut className="h-4 w-4" />
               Logout
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto max-w-7xl px-4 py-10 space-y-8">
+      <main className="container mx-auto max-w-7xl px-6 py-8 space-y-8">
         {/* Hero Section */}
         <section className="space-y-6">
           <div className="flex items-center gap-4">
             <Link href={getBackLink()}>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="default">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
@@ -355,7 +355,7 @@ export default function FleetPage() {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Card className="border-2">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Fleet Units</CardTitle>

@@ -160,27 +160,32 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">SE Repairs System Overview</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="container mx-auto max-w-7xl px-6 py-8 space-y-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Admin Dashboard
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mt-1">
+              SE Repairs System Overview
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={fetchDashboardStats} variant="outline" size="default" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </Button>
+            <Button onClick={exportAllData} variant="outline" size="default" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export All Data
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={fetchDashboardStats} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button onClick={exportAllData} variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export All Data
-          </Button>
-        </div>
-      </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card 
           className="hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer"
           onClick={() => router.push('/admin/issues')}
@@ -246,167 +251,12 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+      <Tabs defaultValue="issues" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="issues">Recent Issues</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="tools">Admin Tools</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Quick Actions */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Link href="/operations">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Settings className="h-4 w-4 mr-2" />
-                    View Operations Dashboard
-                  </Button>
-                </Link>
-                <Link href="/workshop">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Wrench className="h-4 w-4 mr-2" />
-                    View Workshop Dashboard
-                  </Button>
-                </Link>
-                <Link href="/fleet">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Truck className="h-4 w-4 mr-2" />
-                    View Fleet Overview
-                  </Button>
-                </Link>
-                <Link href="/schedule">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    View Schedule
-                  </Button>
-                </Link>
-                <Link href="/admin/issues">
-                  <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Manage All Issues
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Issues by Status - Clickable */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Issues by Status</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <button 
-                  type="button"
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                  onClick={() => router.push('/admin/issues?status=PENDING')}
-                >
-                  <span className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    Pending
-                  </span>
-                  <Badge variant="secondary">{stats.pendingIssues}</Badge>
-                </button>
-                <button 
-                  type="button"
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                  onClick={() => router.push('/admin/issues?status=IN_PROGRESS')}
-                >
-                  <span className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    In Progress
-                  </span>
-                  <Badge variant="secondary">{stats.inProgressIssues}</Badge>
-                </button>
-                <button 
-                  type="button"
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                  onClick={() => router.push('/admin/issues?status=COMPLETED')}
-                >
-                  <span className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    Completed
-                  </span>
-                  <Badge variant="secondary">{stats.completedIssues}</Badge>
-                </button>
-              </CardContent>
-            </Card>
-
-            {/* Issues by Severity - Clickable */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Issues by Severity</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {Object.entries(stats.issuesBySeverity).map(([severity, count]) => (
-                  <button 
-                    type="button"
-                    key={severity}
-                    className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                    onClick={() => router.push(`/admin/issues?severity=${severity}`)}
-                  >
-                    <span className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${getSeverityColor(severity)}`}></div>
-                      {severity.charAt(0).toUpperCase() + severity.slice(1)}
-                    </span>
-                    <Badge variant="secondary">{count}</Badge>
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Issues by Category - Clickable */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Issues by Category</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {Object.entries(stats.issuesByCategory).map(([category, count]) => (
-                  <button 
-                    type="button"
-                    key={category}
-                    className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                    onClick={() => router.push(`/admin/issues?category=${encodeURIComponent(category)}`)}
-                  >
-                    <span>{category}</span>
-                    <Badge variant="secondary">{count}</Badge>
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Work Orders by Status - Clickable */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>Work Orders by Status</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {Object.entries(stats.workOrdersByStatus).map(([status, count]) => (
-                  <button 
-                    type="button"
-                    key={status}
-                    className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-accent cursor-pointer transition-colors text-left"
-                    onClick={() => router.push(`/admin/workorders?status=${status}`)}
-                  >
-                    <span className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`}></div>
-                      {status.replace('_', ' ').charAt(0).toUpperCase() + status.replace('_', ' ').slice(1)}
-                    </span>
-                    <Badge variant="secondary">{count}</Badge>
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
 
         <TabsContent value="issues" className="space-y-4">
           <Card>
@@ -621,6 +471,7 @@ export default function AdminDashboard() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }

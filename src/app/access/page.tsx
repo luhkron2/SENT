@@ -99,7 +99,9 @@ export default function AccessPage() {
         
         const accessConfig = ACCESS_LEVELS[selectedAccess as keyof typeof ACCESS_LEVELS];
         toast.success(`Welcome to ${accessConfig.name}!`);
-        window.location.href = data.redirect;
+        
+        // Use router.push for proper Next.js navigation with cookies
+        router.push(data.redirect);
       } else {
         toast.error(data.error || 'Invalid password. Please try again.');
         setPassword('');

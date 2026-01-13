@@ -15,6 +15,8 @@ function isRateLimited(ip: string, limit = 50, windowMs = 60000): boolean {
   return false;
 }
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const accessLevel = req.cookies.get('accessLevel')?.value;
@@ -22,11 +24,6 @@ export default function middleware(req: NextRequest) {
     req.headers.get('x-forwarded-for') ||
     req.headers.get('x-real-ip') ||
     'unknown';
-
-  // Debug logging for admin routes
-  if (pathname.startsWith('/admin')) {
-    console.log(`[MIDDLEWARE] Admin route: ${pathname}, accessLevel: ${accessLevel}`);
-  }
 
   if (pathname.startsWith('/api/')) {
     if (isRateLimited(ip, 50, 60000)) {
@@ -62,10 +59,11 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(accessUrl);
   }
 
-  // Role-based gates
   // Role-based gates - only redirect if no valid role
   if (!roleFromAccess && isProtectedRoute) {
-    console.log(`[MIDDLEWARE] Redirecting to access: ${pathname}, no access level found`);
+    if (isDev) {
+      console.log(`[MIDDLEWARE] Redirecting to access: ${pathname}, no access level found`);
+    }
     const accessUrl = new URL('/access', req.url);
     return NextResponse.redirect(accessUrl);
   }
@@ -73,10 +71,8 @@ export default function middleware(req: NextRequest) {
   // Admin-only routes
   if (pathname.startsWith('/admin')) {
     if (roleFromAccess !== 'ADMIN') {
-      console.log(`[MIDDLEWARE] Admin access denied: ${pathname}, role: ${roleFromAccess}`);
       return NextResponse.redirect(new URL('/', req.url));
     }
-    console.log(`[MIDDLEWARE] Admin access granted: ${pathname}, role: ${roleFromAccess}`);
   }
 
   if (pathname.startsWith('/operations')) {

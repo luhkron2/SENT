@@ -48,6 +48,7 @@ function transformMappings(records: MappingRecord[]): MappingsCache {
       grouped.drivers[record.key] = {
         phone: toStringField(parsed, 'phone'),
         status: toStringField(parsed, 'status', 'Active'),
+        employeeId: toStringField(parsed, 'employeeId'),
       };
       continue;
     }
@@ -56,6 +57,10 @@ function transformMappings(records: MappingRecord[]): MappingsCache {
       grouped.fleets[record.key] = {
         rego: toStringField(parsed, 'rego', record.key),
         status: toStringField(parsed, 'status', 'Active'),
+        type: toStringField(parsed, 'type', 'Prime Mover'),
+        location: toStringField(parsed, 'location', 'Unknown'),
+        driver: toStringField(parsed, 'driver', 'Unassigned'),
+        phone: toStringField(parsed, 'phone', 'N/A'),
       };
       continue;
     }
@@ -63,9 +68,9 @@ function transformMappings(records: MappingRecord[]): MappingsCache {
     if (record.kind === 'trailer') {
       grouped.trailers[record.key] = {
         rego: toStringField(parsed, 'rego'),
-        type: toStringField(parsed, 'type'),
+        type: toStringField(parsed, 'type', 'Trailer'),
         status: toStringField(parsed, 'status', 'Active'),
-        location: toStringField(parsed, 'location'),
+        location: toStringField(parsed, 'location', 'Unknown'),
       };
     }
   }

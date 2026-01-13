@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '../../../../auth';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
     const accessLevel = request.cookies.get('accessLevel')?.value;
     
     // Check if user has access (operations, workshop, or admin)
-    const hasAccess = (session?.user?.role && ['OPERATIONS', 'WORKSHOP', 'ADMIN'].includes(session.user.role)) || 
+    const hasAccess = (session?.user?.role && ['OPERATIONS', 'WORKSHOP', 'ADMIN'].includes(session.user.role)) ||
                      (accessLevel && ['operations', 'workshop', 'admin'].includes(accessLevel));
     
     if (!hasAccess) {
@@ -35,18 +36,18 @@ export async function GET(request: NextRequest) {
       prisma.issue.count(),
       
       // Resolved issues
-      prisma.issue.count({ 
-        where: { status: { in: ['COMPLETED'] } } 
+      prisma.issue.count({
+        where: { status: { in: ['COMPLETED'] } }
       }),
       
       // Critical issues
-      prisma.issue.count({ 
-        where: { severity: 'CRITICAL' } 
+      prisma.issue.count({
+        where: { severity: 'CRITICAL' }
       }),
       
       // Average resolution time (for completed issues)
       prisma.issue.aggregate({
-        where: { 
+        where: {
           status: { in: ['COMPLETED'] },
           updatedAt: { gte: thirtyDaysAgo }
         },
@@ -82,14 +83,14 @@ export async function GET(request: NextRequest) {
         take: 5
       }),
       
-      // Response time metrics (time from creation to first update)
+      // Response time metrics (time from creation to first update) - PostgreSQL compatible
       prisma.$queryRaw`
-        SELECT 
-          AVG(CAST((julianday(updatedAt) - julianday(createdAt)) * 24 AS REAL)) as avgHours,
-          COUNT(*) as count
-        FROM Issue 
-        WHERE createdAt >= ${thirtyDaysAgo.toISOString()}
-        AND updatedAt > createdAt
+        SELECT
+          AVG(EXTRACT(EPOCH FROM ("updatedAt" - "createdAt")) / 3600) as "avgHours",
+          COUNT(*)::int as count
+        FROM "Issue"
+        WHERE "createdAt" >= ${thirtyDaysAgo}
+        AND "updatedAt" > "createdAt"
       `
     ]);
 
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(metrics);
   } catch (error) {
-    console.error('Metrics API error:', error);
+    logger.error('Metrics API error:', error instanceof Error ? error : undefined);
     return NextResponse.json(
       { error: 'Failed to fetch metrics' },
       { status: 500 }

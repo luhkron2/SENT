@@ -85,9 +85,17 @@ export default function ReportPage() {
           );
           if (response.ok) {
             const data = await response.json();
-            const address = `${data.locality}, ${data.principalSubdivision}`;
-            setLocation({ lat: latitude, lng: longitude, address });
-            if (setValueFn) setValueFn('location', address);
+            // Build full address from available components
+            const addressParts = [];
+            if (data.streetNumber) addressParts.push(data.streetNumber);
+            if (data.streetName) addressParts.push(data.streetName);
+            if (data.locality) addressParts.push(data.locality);
+            if (data.principalSubdivision) addressParts.push(data.principalSubdivision);
+            if (data.countryName) addressParts.push(data.countryName);
+            
+            const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+            setLocation({ lat: latitude, lng: longitude, address: fullAddress });
+            if (setValueFn) setValueFn('location', fullAddress);
           }
         } catch (error) {
           console.error('Failed to get address:', error);

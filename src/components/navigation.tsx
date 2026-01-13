@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ComponentType, SVGProps, useEffect, useState } from 'react';
-import { Home, FileText, Wrench, Settings, Activity, Phone, Moon, Sun, Menu, X, Calendar, DollarSign, User } from 'lucide-react';
+import { Home, FileText, Wrench, Settings, Activity, Phone, Moon, Sun, Menu, X, Calendar, DollarSign, User, Sparkles } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Button } from '@/components/ui/button';
@@ -45,14 +45,14 @@ export function Navigation() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg shadow-md shadow-slate-900/5 dark:bg-slate-950/80 dark:shadow-slate-900/10">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex items-center gap-3 rounded-xl p-2 transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-b border-slate-200/50 dark:bg-slate-950/95 dark:shadow-slate-900/20 dark:border-slate-800/50">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="group flex items-center gap-3 rounded-xl p-2 transition-all duration-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80">
           <Logo size="sm" variant="icon" className="md:hidden" />
           <Logo size="md" className="hidden md:inline-flex" />
         </Link>
 
-        <div className="hidden flex-1 items-center justify-center gap-4 md:flex">
+        <div className="hidden flex-1 items-center justify-center gap-1 md:flex">
           {navItems.map(item => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -61,44 +61,50 @@ export function Navigation() {
                 key={item.key}
                 href={item.href}
                 className={cn(
-                  'group flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-bold transition-all duration-300',
+                  'group relative flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300',
                   isActive
-                    ? 'bg-blue-600/10 text-blue-700 shadow-inner ring-1 ring-blue-600/20 dark:bg-blue-500/20 dark:text-blue-200 dark:ring-blue-500/30'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/50 dark:hover:text-slate-900',
+                    ? 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-blue-700 shadow-sm ring-1 ring-blue-500/20 dark:from-blue-400/10 dark:to-blue-500/10 dark:text-blue-300 dark:ring-blue-400/30'
+                    : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white',
                 )}
               >
                 <Icon
                   className={cn(
-                    'h-5 w-5 transition-transform duration-300',
-                    isActive ? 'text-blue-600 dark:text-blue-400' : 'group-hover:scale-110',
+                    'h-4 w-4 transition-all duration-300',
+                    isActive 
+                      ? 'text-blue-600 dark:text-blue-400 scale-110' 
+                      : 'group-hover:scale-110 group-hover:text-blue-500',
                   )}
                 />
                 {translate(t.nav[item.key])}
+                {isActive && (
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/5 to-blue-600/5 animate-pulse" />
+                )}
               </Link>
             );
           })}
         </div>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <span className="inline-flex items-center gap-2 rounded-full bg-slate-100/80 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm dark:bg-slate-800/70 dark:text-slate-200">
+        <div className="hidden items-center gap-3 md:flex">
+          <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-slate-100/80 to-slate-200/80 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm dark:from-slate-800/70 dark:to-slate-700/70 dark:text-slate-200">
             <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            {t.nav.hotlinePhone}
-          </span>
+            <span className="hidden lg:inline">{t.nav.hotlinePhone}</span>
+            <span className="lg:hidden">Support</span>
+          </div>
           <LanguageToggle />
           <Button
             variant="ghost"
             size="icon"
             onClick={handleToggleTheme}
-            className="h-11 w-11 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-slate-300 hover:bg-white hover:text-slate-900 hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="h-10 w-10 rounded-full border border-slate-200/80 bg-white/80 p-0 text-slate-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-slate-300 hover:bg-white hover:text-slate-900 hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
             aria-label="Toggle theme"
           >
-            <div suppressHydrationWarning>
+            <div suppressHydrationWarning className="relative">
                {!mounted ? (
-                 <Moon className="h-5 w-5" />
+                 <Moon className="h-4 w-4" />
                ) : resolvedTheme === 'dark' ? (
-                 <Sun className="h-5 w-5" />
+                 <Sun className="h-4 w-4 transition-transform duration-300 hover:rotate-180" />
                ) : (
-                 <Moon className="h-5 w-5" />
+                 <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12" />
                )}
             </div>
           </Button>
@@ -109,17 +115,17 @@ export function Navigation() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-10 w-10 rounded-full p-0"
+            onClick={handleToggleTheme}
+            className="h-9 w-9 rounded-full p-0"
             aria-label="Toggle theme"
           >
             <div suppressHydrationWarning>
               {!mounted ? (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-4 w-4" />
               ) : resolvedTheme === 'dark' ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-4 w-4" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-4 w-4" />
               )}
             </div>
           </Button>
@@ -127,43 +133,53 @@ export function Navigation() {
             variant="ghost"
             size="sm"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-10 w-10 rounded-full p-0"
+            className="h-9 w-9 rounded-full p-0"
             aria-label="Open menu"
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </nav>
 
       {mobileMenuOpen && (
-        <div className="border-t border-slate-200/80 bg-white/95 px-4 py-6 shadow-lg dark:border-slate-800/80 dark:bg-slate-950/95 md:hidden">
-          <div className="space-y-2">
+        <div className="border-t border-slate-200/80 bg-white/98 px-4 py-6 shadow-xl backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/98 md:hidden">
+          <div className="space-y-1">
             {navItems.map(item => {
               const isActive = pathname === item.href;
+              const Icon = item.icon;
               return (
                 <Link
                   key={item.key}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-4 rounded-lg px-4 py-3 text-lg font-semibold transition',
+                    'flex items-center gap-4 rounded-xl px-4 py-3.5 text-base font-semibold transition-all duration-300',
                     isActive
-                      ? 'bg-blue-600/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900/70 dark:hover:text-white',
+                      ? 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-blue-700 shadow-sm dark:from-blue-400/10 dark:to-blue-500/10 dark:text-blue-300'
+                      : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900/70 dark:hover:text-white',
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <item.icon className="h-6 w-6" />
+                  <Icon className={cn(
+                    "h-5 w-5 transition-colors",
+                    isActive ? "text-blue-600 dark:text-blue-400" : ""
+                  )} />
                   {translate(t.nav[item.key])}
+                  {isActive && <Sparkles className="ml-auto h-4 w-4 text-blue-500" />}
                 </Link>
               );
             })}
           </div>
           <div className="mt-6 flex flex-col gap-3">
             <Link href="/report" onClick={() => setMobileMenuOpen(false)}>
-              <Button className="h-12 w-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-base font-bold text-white">
+              <Button className="h-12 w-full rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-base font-bold text-white shadow-lg hover:shadow-xl">
+                <FileText className="mr-2 h-5 w-5" />
                 {t.nav.reportCta}
               </Button>
             </Link>
+            <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-100/80 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
+              <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              {t.nav.hotlinePhone}
+            </div>
           </div>
         </div>
       )}

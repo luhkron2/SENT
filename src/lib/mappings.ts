@@ -1,11 +1,16 @@
 export interface DriverMapping {
   phone: string;
   status?: string;
+  employeeId?: string;
 }
 
 export interface FleetMapping {
   rego: string;
   status?: string;
+  type?: string;
+  location?: string;
+  driver?: string;
+  phone?: string;
 }
 
 export interface TrailerMapping {

@@ -12,6 +12,7 @@ function buildFallbackMappings(): MappingsCache {
     acc[driver.name] = {
       phone: driver.phone ?? '',
       status: driver.status ?? 'Active',
+      employeeId: driver.employeeId ?? '',
     };
     return acc;
   }, {});
@@ -20,6 +21,10 @@ function buildFallbackMappings(): MappingsCache {
     acc[fleet.fleetNumber] = {
       rego: fleet.registration ?? fleet.fleetNumber,
       status: fleet.status ?? 'Active',
+      type: fleet.type ?? 'Prime Mover',
+      location: fleet.location ?? 'Unknown',
+      driver: fleet.driver ?? 'Unassigned',
+      phone: fleet.phone ?? 'N/A',
     };
     return acc;
   }, {});
